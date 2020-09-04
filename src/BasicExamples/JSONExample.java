@@ -1,12 +1,12 @@
-package Tests;
+package BasicExamples;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
-import Main.Key;
+import Entities.Key;
 
-public class JSONTests {
+public class JSONExample {
 
 	public static void main(String[] args) throws JsonProcessingException {
 		ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();

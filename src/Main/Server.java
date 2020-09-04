@@ -25,6 +25,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
+import Entities.Key;
+import Entities.Message;
+import Utils.JSONUtil;
+
 // http://localhost:8080/JRA2/main?a=5
 
 @Path("/main")
@@ -36,7 +40,7 @@ public class Server {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public String getAllKeys() {
-		return MyUtil.toJSONString(keys);
+		return JSONUtil.toJSONString(keys);
 	}
 	
 	
@@ -67,7 +71,7 @@ public class Server {
 	    Key key = new Key(str, str);
 	    keys.add(key);
 	    
-		return MyUtil.toJSONString(new Message(key.toString()));
+		return JSONUtil.toJSONString(new Message(key.toString()));
 
 	}
 
@@ -77,7 +81,7 @@ public class Server {
 	public String sign(@PathParam("keyId") String id, @QueryParam("data") String data) {
 		System.out.println("POST CALLED");
 	    System.out.println("ID="+id+" xxxData="+data);
-	    return MyUtil.toJSONString(new Message("success"));
+	    return JSONUtil.toJSONString(new Message("success"));
 	}
 
 
@@ -94,7 +98,7 @@ public class Server {
 	    System.out.println("data="+data);
 	    System.out.println("signature="+signature);
 	    
-	    return MyUtil.toJSONString(new Message("success"));
+	    return JSONUtil.toJSONString(new Message("success"));
 	}
 	
 

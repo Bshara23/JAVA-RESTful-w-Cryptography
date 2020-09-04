@@ -1,10 +1,14 @@
-package Main;
+package BasicExamples;
 
 import java.awt.List;
 import java.io.IOException;
 import java.util.ArrayList;
 
 import org.json.JSONException;
+
+import Entities.Key;
+import Entities.Message;
+import Utils.JSONUtil;
 
 // http://localhost:8080/JRA2/main?a=5
 public class ClientTest {
@@ -19,7 +23,7 @@ public class ClientTest {
 		String url0 = "http://localhost:8080/JRA2/main?a=5";
 		String url1 = "http://localhost:8080/JRA2/main";
 
-		Key myKey = MyUtil.getObjFromUrl(url1, Key.class);
+		Key myKey = JSONUtil.getObjFromUrl(url1, Key.class);
 		System.out.println(myKey);
 
 	}
@@ -30,7 +34,7 @@ public class ClientTest {
 
 	static void verify() throws IOException {
 		// verify/awd?data=awd&signature=awd
-		Message msg = MyUtil.postToUrl("http://localhost:8080/JRA2/main/verify/aaa?data=bbb&signature=ccc",
+		Message msg = JSONUtil.postToUrl("http://localhost:8080/JRA2/main/verify/aaa?data=bbb&signature=ccc",
 				Message.class);
 		System.out.println(msg.getContent());
 	}
@@ -38,13 +42,13 @@ public class ClientTest {
 	static void f3() throws IOException {
 
 		Message str;
-		str = MyUtil.postToUrl("http://localhost:8080/JRA2/main/generate?size=4", Message.class);
+		str = JSONUtil.postToUrl("http://localhost:8080/JRA2/main/generate?size=4", Message.class);
 		System.out.println(str);
 
-		str = MyUtil.postToUrl("http://localhost:8080/JRA2/main/generate?size=4", Message.class);
+		str = JSONUtil.postToUrl("http://localhost:8080/JRA2/main/generate?size=4", Message.class);
 		System.out.println(str);
 
-		str = MyUtil.postToUrl("http://localhost:8080/JRA2/main/generate?size=4", Message.class);
+		str = JSONUtil.postToUrl("http://localhost:8080/JRA2/main/generate?size=4", Message.class);
 		System.out.println(str);
 
 		// str = MyUtil.getJSONFromUrl("http://localhost:8080/JRA2/main/");
@@ -53,7 +57,7 @@ public class ClientTest {
 	}
 
 	static void f4() throws IOException {
-		ArrayList<Key> keys = MyUtil.getArrayList("http://localhost:8080/JRA2/main/", Key.class);
+		ArrayList<Key> keys = JSONUtil.getArrayList("http://localhost:8080/JRA2/main/", Key.class);
 		System.out.println("number of keys=" + keys.size());
 
 

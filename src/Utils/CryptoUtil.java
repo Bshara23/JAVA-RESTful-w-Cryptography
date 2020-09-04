@@ -1,4 +1,4 @@
-package Main;
+package Utils;
 
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -13,7 +13,7 @@ import javax.crypto.Cipher;
 // for reference i used this:
 // https://niels.nu/blog/2016/java-rsa.html
 
-public class EncryptUtil {
+public class CryptoUtil {
 	// TODO verify this...
 	private static final String UTF_8 = "ISO-8859-1";
 

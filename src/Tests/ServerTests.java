@@ -8,8 +8,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import Main.Key;
-import Main.MyUtil;
+import Entities.Key;
+import Utils.JSONUtil;
 
 class ServerTests {
 
@@ -28,7 +28,7 @@ class ServerTests {
 
 		Key expected = new Key("abc", "123");
 		String url1 = "http://localhost:8080/JRA2/main";
-		Key fetched = MyUtil.getObjFromUrl(url1, Key.class);
+		Key fetched = JSONUtil.getObjFromUrl(url1, Key.class);
 		
 		
 		assertTrue(expected.equals(fetched));
