@@ -18,12 +18,14 @@ public class ClientUtil {
 	
 	public static String encrypt(String keyId, String data) throws IOException {
 		String encryptUrl = root + "encrypt/" + keyId + "?data=" + data;
+		System.out.println(encryptUrl);
 		String encryptedData = ((Message) JSONUtil.postToUrl(encryptUrl, Message.class)).getContent();
 		return encryptedData;
 	}
 	
 	public static String decrypt(String keyId, String encryptedData) throws IOException {
 		String decryptUrl = root + "decrypt/" + keyId + "?encryptedData=" + encryptedData;
+		System.out.println(decryptUrl);
 		String decryptedData = ((Message) JSONUtil.postToUrl(decryptUrl, Message.class)).getContent();
 		return decryptedData;
 	}

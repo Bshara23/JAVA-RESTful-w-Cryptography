@@ -31,11 +31,11 @@ public class CryptoUtil {
 
 		byte[] cipherText = encryptCipher.doFinal(plainText.getBytes(UTF_8));
 
-		return Base64.getEncoder().encodeToString(cipherText);
+		return Base64.getUrlEncoder().encodeToString(cipherText);
 	}
 
 	public static String decrypt(String encryptedData, PrivateKey privateKey) throws Exception {
-		byte[] bytes = Base64.getDecoder().decode(encryptedData);
+		byte[] bytes = Base64.getUrlDecoder().decode(encryptedData);
 
 		Cipher decriptCipher = Cipher.getInstance("RSA");
 		decriptCipher.init(Cipher.DECRYPT_MODE, privateKey);
@@ -51,7 +51,7 @@ public class CryptoUtil {
 
 	    byte[] signature = privateSignature.sign();
 
-	    return Base64.getEncoder().encodeToString(signature);
+	    return Base64.getUrlEncoder().encodeToString(signature);
 	}
 	
 	public static boolean verify(String plainText, String signature, PublicKey publicKey) throws Exception {
@@ -59,7 +59,7 @@ public class CryptoUtil {
 	    publicSignature.initVerify(publicKey);
 	    publicSignature.update(plainText.getBytes(UTF_8));
 
-	    byte[] signatureBytes = Base64.getDecoder().decode(signature);
+	    byte[] signatureBytes = Base64.getUrlDecoder().decode(signature);
 
 	    return publicSignature.verify(signatureBytes);
 	}

@@ -8,6 +8,7 @@ import org.json.JSONException;
 
 import Entities.Key;
 import Entities.Message;
+import Utils.ClientUtil;
 import Utils.JSONUtil;
 
 // http://localhost:8080/JRA2/main?a=5
@@ -15,8 +16,7 @@ public class ClientUsageExamples {
 
 	public static void main(String[] args) throws IOException, JSONException {
 
-		f3();
-		f4();
+		f6();
 	}
 
 	static void f2() throws IOException {
@@ -67,6 +67,28 @@ public class ClientUsageExamples {
 			System.out.println(keys.get(i));
 		}
 
+	}
+	
+	static void f5() throws IOException {
+		String keyId = ClientUtil.generateKey();
+		String data = "this-is-an-example-message-for-tests";
+		
+		String encryptedData = ClientUtil.encrypt(keyId, data);
+		System.out.println(encryptedData);
+		//String decryptedData = ClientUtil.decrypt(keyId, encryptedData);
+	}
+	
+	static void f6() throws IOException {
+		String keyId = ClientUtil.generateKey();
+		String data = "this-is-an-example-message-for-tests";
+		
+		String encryptedData = ClientUtil.encrypt(keyId, data);
+		System.out.println(encryptedData);
+		
+		String decryptedData = ClientUtil.decrypt(keyId, encryptedData);
+		System.out.println(decryptedData);
+
+		//String decryptedData = ClientUtil.decrypt(keyId, encryptedData);
 	}
 
 }

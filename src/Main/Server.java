@@ -146,7 +146,7 @@ public class Server {
 		for (int i = 0; i < keys.size(); i++) {
 
 			Key tmp = keys.get(i);
-			if (tmp.getKeyId() == keyId)
+			if (tmp.getKeyId().equals(keyId))
 				return tmp;
 		}
 

@@ -58,7 +58,7 @@ class ServerTests {
 	void encryptDecryptMessageTest() throws IOException {
 		
 		String keyId = ClientUtil.generateKey();
-		String data = "this is an example message for tests";
+		String data = "this-is-an-example-message-for-tests";
 		
 		String encryptedData = ClientUtil.encrypt(keyId, data);
 
