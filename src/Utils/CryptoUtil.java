@@ -34,8 +34,8 @@ public class CryptoUtil {
 		return Base64.getEncoder().encodeToString(cipherText);
 	}
 
-	public static String decrypt(String cipherText, PrivateKey privateKey) throws Exception {
-		byte[] bytes = Base64.getDecoder().decode(cipherText);
+	public static String decrypt(String encryptedData, PrivateKey privateKey) throws Exception {
+		byte[] bytes = Base64.getDecoder().decode(encryptedData);
 
 		Cipher decriptCipher = Cipher.getInstance("RSA");
 		decriptCipher.init(Cipher.DECRYPT_MODE, privateKey);

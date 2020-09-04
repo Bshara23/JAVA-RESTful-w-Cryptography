@@ -1,27 +1,30 @@
 package Entities;
 
 import java.io.Serializable;
+import java.security.KeyPair;
 
-public class Key implements Serializable{
+public class Key implements Serializable {
 
-	public String encryptedData;
-	public String keyId;
-	
-	public Key(String encryptedData, String keyId) {
-		this.encryptedData = encryptedData;
+	private static final long serialVersionUID = 1L;
+
+	private KeyPair keyPair;
+	private String keyId;
+
+	public Key(String keyId, KeyPair keyPair) {
+		this.keyPair = keyPair;
 		this.keyId = keyId;
 	}
-	
-	
-	public Key() {}
 
-
-	public String getEncryptedData() {
-		return encryptedData;
+	public Key() {
 	}
 
-	public void setEncryptedData(String encryptedData) {
-		this.encryptedData = encryptedData;
+	
+	public KeyPair getKeyPair() {
+		return keyPair;
+	}
+
+	public void setKeyPair(KeyPair keyPair) {
+		this.keyPair = keyPair;
 	}
 
 	public String getKeyId() {
@@ -32,22 +35,21 @@ public class Key implements Serializable{
 		this.keyId = keyId;
 	}
 
+	
 
 	@Override
 	public String toString() {
-		return "Key [encryptedData=" + encryptedData + ", keyId=" + keyId + "]";
+		return "Key [keyPair=" + keyPair + ", keyId=" + keyId + "]";
 	}
-
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((encryptedData == null) ? 0 : encryptedData.hashCode());
 		result = prime * result + ((keyId == null) ? 0 : keyId.hashCode());
+		result = prime * result + ((keyPair == null) ? 0 : keyPair.hashCode());
 		return result;
 	}
-
 
 	@Override
 	public boolean equals(Object obj) {
@@ -58,19 +60,20 @@ public class Key implements Serializable{
 		if (getClass() != obj.getClass())
 			return false;
 		Key other = (Key) obj;
-		if (encryptedData == null) {
-			if (other.encryptedData != null)
-				return false;
-		} else if (!encryptedData.equals(other.encryptedData))
-			return false;
 		if (keyId == null) {
 			if (other.keyId != null)
 				return false;
 		} else if (!keyId.equals(other.keyId))
 			return false;
+		if (keyPair == null) {
+			if (other.keyPair != null)
+				return false;
+		} else if (!keyPair.equals(other.keyPair))
+			return false;
 		return true;
 	}
+
 	
 	
-	
+
 }

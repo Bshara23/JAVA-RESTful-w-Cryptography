@@ -1,6 +1,7 @@
 package Main;
 
 import java.io.IOException;
+import java.security.KeyPair;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -27,6 +28,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 
 import Entities.Key;
 import Entities.Message;
+import Utils.CryptoUtil;
 import Utils.JSONUtil;
 
 // http://localhost:8080/JRA2/main?a=5
@@ -34,44 +36,75 @@ import Utils.JSONUtil;
 @Path("/main")
 public class Server {
 	@PersistenceContext
-	private static ArrayList<Key> keys = new ArrayList<Key>();
 
+	// TODO: change to a HashMap
+	private static ArrayList<Key> keys = new ArrayList<Key>();
+	private static int idCnt = 0;
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public String getAllKeys() {
-		return JSONUtil.toJSONString(keys);
+		ArrayList<String> keysIDs = new ArrayList<String>();
+
+		for (Key key : keys)
+			keysIDs.add(key.getKeyId());
+
+		return JSONUtil.toJSONString(keysIDs);
+
+		// gave IDs instead of the actual key
+		// return JSONUtil.toJSONString(keys);
 	}
-	
-	
-	
+
+	@POST
+	@Path("clear")
+	@Consumes("text/plain")
+	public String clearAllKeys() {
+		System.out.println("Clearing all keys");
+		keys.clear();
+		Server.idCnt = 0;
+
+		return JSONUtil.toJSONString(new Message("Success"));
+
+	}
+
 	@POST
 	@Path("decrypt/{keyId}")
 	@Consumes("text/plain")
-	public void decryptKey(@PathParam("keyId") String id, @QueryParam("encryptedData") String encryptedData) {
-		System.out.println("POST CALLED");
-	    System.out.println("ID="+id+" xxxData="+encryptedData);
+	public String decryptMessage(@PathParam("keyId") String keyId, @QueryParam("encryptedData") String encryptedData)
+			throws Exception {
+
+		Key key = getKey(keyId);
+		if(key == null)
+			return JSONUtil.toJSONString(new Message("-1"));
+
+		String decryptedMessage = CryptoUtil.decrypt(encryptedData, key.getKeyPair().getPrivate());
+		return JSONUtil.toJSONString(new Message(decryptedMessage));
 	}
-	
+
 	@POST
 	@Path("encrypt/{keyId}")
 	@Consumes("text/plain")
-	public void encryptKey(@PathParam("keyId") String id, @QueryParam("data") String data) {
-		System.out.println("POST CALLED");
-	    System.out.println("ID="+id+" xxxData="+data);
+	public String encryptMessage(@PathParam("keyId") String keyId, @QueryParam("data") String data) throws Exception {
+
+		Key key = getKey(keyId);
+		if(key == null)
+			return JSONUtil.toJSONString(new Message("-1"));
+		
+		String encryptedMessage = CryptoUtil.encrypt(data, key.getKeyPair().getPublic());
+		return JSONUtil.toJSONString(new Message(encryptedMessage));
 	}
-	
-	
+
 	@POST
 	@Path("generate")
 	@Consumes("text/plain")
-	public String generateKey(@QueryParam("size") int size) {
-	    System.out.println("Generated a key with size="+size);
-	    String str = keys.size()+"";
-	    Key key = new Key(str, str);
-	    keys.add(key);
-	    
-		return JSONUtil.toJSONString(new Message(key.toString()));
+	public String generateKey(@QueryParam("size") int size) throws Exception {
+		System.out.println("Generated a key with size= " + size);
+
+		KeyPair pair = CryptoUtil.generateKeyPair(size);
+		Key key = new Key(getNewKeyID(), pair);
+		keys.add(key);
+
+		return JSONUtil.toJSONString(new Message(key.getKeyId()));
 
 	}
 
@@ -80,29 +113,44 @@ public class Server {
 	@Consumes("text/plain")
 	public String sign(@PathParam("keyId") String id, @QueryParam("data") String data) {
 		System.out.println("POST CALLED");
-	    System.out.println("ID="+id+" xxxData="+data);
-	    return JSONUtil.toJSONString(new Message("success"));
+		System.out.println("ID=" + id + " xxxData=" + data);
+		return JSONUtil.toJSONString(new Message("success"));
 	}
-
 
 	/**
 	 * Verify the given signature and data using the given key
-	 * verify/awd?data=awd&signature=awd 
-	 * */
+	 * verify/awd?data=awd&signature=awd
+	 */
 	@POST
 	@Path("verify/{keyId}")
 	@Consumes("text/plain")
-	public String verify(@PathParam("keyId") String id, @QueryParam("data") String data, @QueryParam("signature") String signature) {
+	public String verify(@PathParam("keyId") String id, @QueryParam("data") String data,
+			@QueryParam("signature") String signature) {
 		System.out.println("Verify the given signature and data using the given key");
-	    System.out.println("ID="+id);
-	    System.out.println("data="+data);
-	    System.out.println("signature="+signature);
-	    
-	    return JSONUtil.toJSONString(new Message("success"));
+		System.out.println("ID=" + id);
+		System.out.println("data=" + data);
+		System.out.println("signature=" + signature);
+
+		return JSONUtil.toJSONString(new Message("success"));
 	}
-	
 
-	
+	private String getNewKeyID() {
+		Server.idCnt += 1;
+		return Server.idCnt + "";
+	}
+
+	// TODO: change to a HashMap search
+	@SuppressWarnings("unused")
+	private Key getKey(String keyId) {
+
+		for (int i = 0; i < keys.size(); i++) {
+
+			Key tmp = keys.get(i);
+			if (tmp.getKeyId() == keyId)
+				return tmp;
+		}
+
+		return null;
+	}
+
 }
-
-

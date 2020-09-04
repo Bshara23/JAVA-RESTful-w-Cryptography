@@ -11,7 +11,7 @@ import Entities.Message;
 import Utils.JSONUtil;
 
 // http://localhost:8080/JRA2/main?a=5
-public class ClientTest {
+public class ClientUsageExamples {
 
 	public static void main(String[] args) throws IOException, JSONException {
 
@@ -42,13 +42,15 @@ public class ClientTest {
 	static void f3() throws IOException {
 
 		Message str;
-		str = JSONUtil.postToUrl("http://localhost:8080/JRA2/main/generate?size=4", Message.class);
+		String url = "http://localhost:8080/JRA2/main/generate?size=2048";
+		
+		str = JSONUtil.postToUrl(url, Message.class);
 		System.out.println(str);
 
-		str = JSONUtil.postToUrl("http://localhost:8080/JRA2/main/generate?size=4", Message.class);
+		str = JSONUtil.postToUrl(url, Message.class);
 		System.out.println(str);
 
-		str = JSONUtil.postToUrl("http://localhost:8080/JRA2/main/generate?size=4", Message.class);
+		str = JSONUtil.postToUrl(url, Message.class);
 		System.out.println(str);
 
 		// str = MyUtil.getJSONFromUrl("http://localhost:8080/JRA2/main/");
@@ -57,7 +59,7 @@ public class ClientTest {
 	}
 
 	static void f4() throws IOException {
-		ArrayList<Key> keys = JSONUtil.getArrayList("http://localhost:8080/JRA2/main/", Key.class);
+		ArrayList<String> keys = JSONUtil.getArrayList("http://localhost:8080/JRA2/main/", String.class);
 		System.out.println("number of keys=" + keys.size());
 
 
