@@ -34,18 +34,18 @@ class ServerTests {
 	@Test
 	void listAllKeysTest() throws IOException {
 
-		
+		ArrayList<String> keys = new ArrayList<String>();
 		// Generate 4 keys
-		ClientUtil.generateKey();
-		ClientUtil.generateKey();
-		ClientUtil.generateKey();
-		ClientUtil.generateKey();
+		keys.add(ClientUtil.generateKey());
+		keys.add(ClientUtil.generateKey());
+		keys.add(ClientUtil.generateKey());
+		keys.add(ClientUtil.generateKey());
 		
 		String getAllKeysUrl = ClientUtil.root;
 		
-		ArrayList<String> keys = JSONUtil.getArrayList(getAllKeysUrl, String.class);
+		ArrayList<String> fetchedkeys = JSONUtil.getArrayList(getAllKeysUrl, String.class);
 
-		assertEquals(keys.size(), 4);
+		assertEquals(fetchedkeys, keys);
 
 
 	}
@@ -72,21 +72,19 @@ class ServerTests {
 	}
 
 	@Test
-	void signTest() throws Exception {
+	void signAndVerifyTest() throws Exception {
 		
 		String keyId = ClientUtil.generateKey();
 		String data = "this-is-an-example-message-for-tests";
 
 		String signature = ClientUtil.sign(data, keyId);
+
 		boolean isCorrect = ClientUtil.verify(data, signature, keyId);
 		
 		assertTrue(isCorrect);
 	}
 
-	@Test
-	void verifyTest() {
 
-	}
 	
 	
 }
