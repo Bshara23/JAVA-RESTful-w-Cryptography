@@ -3,6 +3,7 @@ package Tests;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
+import java.security.KeyPair;
 import java.util.ArrayList;
 
 import org.junit.jupiter.api.AfterEach;
@@ -12,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import Entities.Key;
 import Entities.Message;
 import Utils.ClientUtil;
+import Utils.CryptoUtil;
 import Utils.JSONUtil;
 
 class ServerTests {
@@ -28,10 +30,6 @@ class ServerTests {
 		JSONUtil.postToUrl(clearUrl, Message.class);
 	}
 
-	@Test
-	void basicGetTest() throws IOException {
-
-	}
 
 	@Test
 	void listAllKeysTest() throws IOException {
@@ -53,12 +51,11 @@ class ServerTests {
 	}
 
 
-
 	@Test
 	void encryptDecryptMessageTest() throws IOException {
 		
 		String keyId = ClientUtil.generateKey();
-		String data = "this-is-an-example-message-for-tests";
+		String data = "this is an-example-message-for-tests";
 		
 		String encryptedData = ClientUtil.encrypt(keyId, data);
 
@@ -75,8 +72,15 @@ class ServerTests {
 	}
 
 	@Test
-	void signTest() {
+	void signTest() throws Exception {
+		
+		String keyId = ClientUtil.generateKey();
+		String data = "this-is-an-example-message-for-tests";
 
+		String signature = ClientUtil.sign(data, keyId);
+		boolean isCorrect = ClientUtil.verify(data, signature, keyId);
+		
+		assertTrue(isCorrect);
 	}
 
 	@Test

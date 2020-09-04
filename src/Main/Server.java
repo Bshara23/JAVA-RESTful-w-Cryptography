@@ -74,7 +74,7 @@ public class Server {
 			throws Exception {
 
 		Key key = getKey(keyId);
-		if(key == null)
+		if (key == null)
 			return JSONUtil.toJSONString(new Message("-1"));
 
 		String decryptedMessage = CryptoUtil.decrypt(encryptedData, key.getKeyPair().getPrivate());
@@ -87,9 +87,9 @@ public class Server {
 	public String encryptMessage(@PathParam("keyId") String keyId, @QueryParam("data") String data) throws Exception {
 
 		Key key = getKey(keyId);
-		if(key == null)
+		if (key == null)
 			return JSONUtil.toJSONString(new Message("-1"));
-		
+
 		String encryptedMessage = CryptoUtil.encrypt(data, key.getKeyPair().getPublic());
 		return JSONUtil.toJSONString(new Message(encryptedMessage));
 	}
@@ -111,27 +111,31 @@ public class Server {
 	@POST
 	@Path("sign/{keyId}")
 	@Consumes("text/plain")
-	public String sign(@PathParam("keyId") String id, @QueryParam("data") String data) {
-		System.out.println("POST CALLED");
-		System.out.println("ID=" + id + " xxxData=" + data);
-		return JSONUtil.toJSONString(new Message("success"));
+	public String sign(@PathParam("keyId") String keyId, @QueryParam("data") String data) throws Exception {
+
+		Key key = getKey(keyId);
+		if (key == null)
+			return JSONUtil.toJSONString(new Message("-1"));
+
+		String signature = CryptoUtil.sign(data, key.getKeyPair().getPrivate());
+
+		return JSONUtil.toJSONString(new Message(signature));
+
 	}
 
-	/**
-	 * Verify the given signature and data using the given key
-	 * verify/awd?data=awd&signature=awd
-	 */
 	@POST
 	@Path("verify/{keyId}")
 	@Consumes("text/plain")
-	public String verify(@PathParam("keyId") String id, @QueryParam("data") String data,
-			@QueryParam("signature") String signature) {
-		System.out.println("Verify the given signature and data using the given key");
-		System.out.println("ID=" + id);
-		System.out.println("data=" + data);
-		System.out.println("signature=" + signature);
+	public String verify(@PathParam("keyId") String keyId, @QueryParam("data") String data,
+			@QueryParam("signature") String signature) throws Exception {
 
-		return JSONUtil.toJSONString(new Message("success"));
+		Key key = getKey(keyId);
+		if (key == null)
+			return JSONUtil.toJSONString(new Message("-1"));
+
+		boolean isCorrect = CryptoUtil.verify(data, signature, key.getKeyPair().getPublic());
+
+		return JSONUtil.toJSONString(new Message(isCorrect ? "true" : "false"));
 	}
 
 	private String getNewKeyID() {
