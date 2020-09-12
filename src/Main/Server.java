@@ -27,6 +27,9 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Logger;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
@@ -39,9 +42,18 @@ import Utils.JSONUtil;
 // http://localhost:8080/JRA2/main?a=5
 
 @Path("/main")
-public class Server {
+public class Server extends Application {
+	
+	public Server() {
+		// TODO: find a way to use log4j.properties instead of this line
+		BasicConfigurator.configure();
+	}
+	
 	@PersistenceContext
-
+	
+	
+	private static Logger logger = Logger.getLogger(Server.class);
+	
 	private static HashMap<String, Key> keys = new HashMap<String, Key>();
 	private static int idCnt = 0;
 
@@ -80,7 +92,7 @@ public class Server {
 	@Path("clear")
 	@Consumes("text/plain")
 	public String clearAllKeys() {
-		System.out.println("Clearing all keys");
+		logger.info("Clearing all keys");
 		keys.clear();
 		Server.idCnt = 0;
 
@@ -107,8 +119,8 @@ public class Server {
 	@Consumes("text/plain")
 	public String encryptMessage(@PathParam("keyId") String keyId, @QueryParam("data") String data) throws Exception {
 
-		System.out.println("encryptMessage : keyID : " + keyId);
-		System.out.println(keys.entrySet());
+		logger.info("encryptMessage : keyID : " + keyId);
+		logger.info(keys.entrySet());
 		Key key = getKey(keyId);
 		
 		if (key == null)
@@ -122,7 +134,7 @@ public class Server {
 	@Path("generate")
 	@Consumes("text/plain")
 	public String generateKey(@QueryParam("size") int size) throws Exception {
-		System.out.println("Generated a key with size= " + size);
+		logger.info("Generated a key with size= " + size);
 
 		KeyPair pair = CryptoUtil.generateKeyPair(size);
 		String id = getNewKeyID();
