@@ -61,21 +61,26 @@ class ServerTests {
 
 		String decryptedData = ClientUtil.decrypt(keyId, encryptedData);
 
-		assertEquals(decryptedData, data);
+		assertEquals(data, decryptedData);
 		
 	}
 
 	@Test
 	void generateKeyTest() throws IOException {
 		String keyId = ClientUtil.generateKey();
-		assertEquals(keyId, "1");
+		
+		String getAllKeysUrl = ClientUtil.root;
+		ArrayList<String> fetchedkeys = JSONUtil.getArrayList(getAllKeysUrl, String.class);
+
+		
+		assertTrue(fetchedkeys.contains(keyId) && fetchedkeys.size()==1);
 	}
 
 	@Test
 	void signAndVerifyTest() throws Exception {
 		
 		String keyId = ClientUtil.generateKey();
-		String data = "this-is-an-example-message-for-tests";
+		String data = "this is an example message for tests";
 
 		String signature = ClientUtil.sign(data, keyId);
 

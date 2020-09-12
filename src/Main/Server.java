@@ -5,14 +5,18 @@ import java.security.KeyPair;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map.Entry;
 import java.util.Random;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
+import javax.ws.rs.OPTIONS;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -21,6 +25,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -37,19 +42,35 @@ import Utils.JSONUtil;
 public class Server {
 	@PersistenceContext
 
-	// TODO: change to a HashMap
-	private static ArrayList<Key> keys = new ArrayList<Key>();
+	private static HashMap<String, Key> keys = new HashMap<String, Key>();
 	private static int idCnt = 0;
 
+	/*
+	@OPTIONS
+	@Path("/getsample")
+	public Response getOptions() {
+		return Response.ok().header("Access-Control-Allow-Origin", "*")
+				.header("Access-Control-Allow-Methods", "POST, GET, PUT, UPDATE, OPTIONS")
+				.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With").build();
+	}
+
+	*/
+	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public String getAllKeys() {
+	public Response getAllKeys() throws Exception {
+
 		ArrayList<String> keysIDs = new ArrayList<String>();
 
-		for (Key key : keys)
-			keysIDs.add(key.getKeyId());
+		for (Entry<String, Key> key : keys.entrySet()) {
+			keysIDs.add(key.getValue().getKeyId());
+		}
+			
+		String res = JSONUtil.toJSONString(keysIDs);
 
-		return JSONUtil.toJSONString(keysIDs);
+		return Response.ok(res).header("Access-Control-Allow-Origin", "*").build();
+
+		// return JSONUtil.toJSONString(keysIDs);
 
 		// gave IDs instead of the actual key
 		// return JSONUtil.toJSONString(keys);
@@ -86,7 +107,10 @@ public class Server {
 	@Consumes("text/plain")
 	public String encryptMessage(@PathParam("keyId") String keyId, @QueryParam("data") String data) throws Exception {
 
+		System.out.println("encryptMessage : keyID : " + keyId);
+		System.out.println(keys.entrySet());
 		Key key = getKey(keyId);
+		
 		if (key == null)
 			return JSONUtil.toJSONString(new Message("-1"));
 
@@ -101,9 +125,10 @@ public class Server {
 		System.out.println("Generated a key with size= " + size);
 
 		KeyPair pair = CryptoUtil.generateKeyPair(size);
-		Key key = new Key(getNewKeyID(), pair);
-		keys.add(key);
-
+		String id = getNewKeyID();
+		Key key = new Key(id, pair);
+		keys.put(id, key);
+		
 		return JSONUtil.toJSONString(new Message(key.getKeyId()));
 
 	}
@@ -114,6 +139,8 @@ public class Server {
 	public String sign(@PathParam("keyId") String keyId, @QueryParam("data") String data) throws Exception {
 
 		Key key = getKey(keyId);
+		
+		
 		if (key == null)
 			return JSONUtil.toJSONString(new Message("-1"));
 
@@ -143,18 +170,9 @@ public class Server {
 		return Server.idCnt + "";
 	}
 
-	// TODO: change to a HashMap search
-	@SuppressWarnings("unused")
 	private Key getKey(String keyId) {
-
-		for (int i = 0; i < keys.size(); i++) {
-
-			Key tmp = keys.get(i);
-			if (tmp.getKeyId().equals(keyId))
-				return tmp;
-		}
-
-		return null;
+		
+		return keys.get(keyId);
 	}
 
 }

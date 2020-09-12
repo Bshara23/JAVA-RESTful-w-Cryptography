@@ -18,7 +18,7 @@ public class ClientUsageExamples {
 
 	public static void main(String[] args) throws IOException, JSONException {
 
-		signAndVerify();
+		generateKeys();
 	}
 
 

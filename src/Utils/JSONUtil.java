@@ -12,7 +12,6 @@ import java.util.Scanner;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
@@ -91,7 +90,7 @@ public class JSONUtil {
 		
 	}
 	
-	@SuppressWarnings("unchecked")
+
 	public static <T> ArrayList<T> getArrayList(String urlStr, @SuppressWarnings("rawtypes") Class cls) throws IOException {
 		URL url = new URL(urlStr);
 		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
