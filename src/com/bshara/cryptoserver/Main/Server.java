@@ -1,4 +1,4 @@
-package Main;
+package com.bshara.cryptoserver.Main;
 
 import java.security.KeyPair;
 import java.util.ArrayList;
