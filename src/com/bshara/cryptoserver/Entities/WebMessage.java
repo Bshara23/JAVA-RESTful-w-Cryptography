@@ -1,19 +1,17 @@
 package com.bshara.cryptoserver.Entities;
 
-import java.io.Serializable;
+public class WebMessage {
 
-public class Message  implements Serializable{
-
-	
 	private String content;
-	public Message() {
-		this.content = "";
-	}
-	
-	public Message(String content) {
+
+	public WebMessage(String content) {
+		super();
 		this.content = content;
 	}
-
+	public WebMessage() {
+		super();
+		this.content = "";
+	}
 	public String getContent() {
 		return content;
 	}
@@ -24,10 +22,8 @@ public class Message  implements Serializable{
 
 	@Override
 	public String toString() {
-		return "Message [content=" + content + "]";
+		return "WebMessage [content=" + content + "]";
 	}
-	
-	
 	
 	
 }

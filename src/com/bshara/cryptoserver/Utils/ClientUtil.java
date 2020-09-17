@@ -5,7 +5,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 
-import com.bshara.cryptoserver.Entities.Message;
+import com.bshara.cryptoserver.Entities.WebMessage;
 
 public class ClientUtil {
 
@@ -13,7 +13,7 @@ public class ClientUtil {
 
 	public static String GET_generateKey() throws IOException {
 		String generateUrl = root + "generate?size=2048";
-		String keyId = ((Message) JSONUtil.postToUrl(generateUrl, Message.class)).getContent();
+		String keyId = ((WebMessage) JSONUtil.postToUrl(generateUrl, WebMessage.class)).getContent();
 		return keyId;
 	}
 
@@ -21,14 +21,14 @@ public class ClientUtil {
 
 		data = encode(data);
 		String encryptUrl = root + "encrypt/" + keyId + "?data=" + data;
-		String encryptedData = ((Message) JSONUtil.postToUrl(encryptUrl, Message.class)).getContent();
+		String encryptedData = ((WebMessage) JSONUtil.postToUrl(encryptUrl, WebMessage.class)).getContent();
 		return encryptedData;
 	}
 
 	public static String POST_decrypt(String keyId, String encryptedData) throws IOException {
 
 		String decryptUrl = root + "decrypt/" + keyId + "?encryptedData=" + encryptedData;
-		String decryptedData = ((Message) JSONUtil.postToUrl(decryptUrl, Message.class)).getContent();
+		String decryptedData = ((WebMessage) JSONUtil.postToUrl(decryptUrl, WebMessage.class)).getContent();
 		return decryptedData;
 	}
 
@@ -37,7 +37,7 @@ public class ClientUtil {
 		data = encode(data);
 
 		String signUrl = root + "sign/" + keyId + "?data=" + data;
-		String signature = ((Message) JSONUtil.postToUrl(signUrl, Message.class)).getContent();
+		String signature = ((WebMessage) JSONUtil.postToUrl(signUrl, WebMessage.class)).getContent();
 		return signature;
 	}
 
@@ -45,7 +45,7 @@ public class ClientUtil {
 		data = encode(data);
 
 		String verifyUrl = root + "verify/" + keyId + "?data=" + data + "&signature=" + signature;
-		String verifyResult = ((Message) JSONUtil.postToUrl(verifyUrl, Message.class)).getContent();
+		String verifyResult = ((WebMessage) JSONUtil.postToUrl(verifyUrl, WebMessage.class)).getContent();
 		return verifyResult.equals("true");
 	}
 

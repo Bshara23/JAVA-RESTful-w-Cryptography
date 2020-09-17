@@ -7,8 +7,7 @@ import java.util.ArrayList;
 
 import org.json.JSONException;
 
-import com.bshara.cryptoserver.Entities.Key;
-import com.bshara.cryptoserver.Entities.Message;
+import com.bshara.cryptoserver.Entities.WebMessage;
 import com.bshara.cryptoserver.Utils.ClientUtil;
 import com.bshara.cryptoserver.Utils.CryptoUtil;
 import com.bshara.cryptoserver.Utils.JSONUtil;
@@ -27,16 +26,16 @@ public class ClientUsageExamples {
 
 	static void generateKeys() throws IOException {
 
-		Message str;
+		WebMessage str;
 		String url = "http://localhost:8080/JRA2/main/generate?size=2048";
 
-		str = JSONUtil.postToUrl(url, Message.class);
+		str = JSONUtil.postToUrl(url, WebMessage.class);
 		System.out.println(str);
 
-		str = JSONUtil.postToUrl(url, Message.class);
+		str = JSONUtil.postToUrl(url, WebMessage.class);
 		System.out.println(str);
 
-		str = JSONUtil.postToUrl(url, Message.class);
+		str = JSONUtil.postToUrl(url, WebMessage.class);
 		System.out.println(str);
 
 		// str = MyUtil.getJSONFromUrl("http://localhost:8080/JRA2/main/");
