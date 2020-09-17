@@ -15,6 +15,12 @@
       </resource>
     </resources>
     <plugins>
+    <plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-surefire-plugin</artifactId>
+    <!-- JUnit 5 requires Surefire version 2.22.0 or higher -->
+    <version>2.22.0</version>
+</plugin>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.8.1</version>
@@ -62,6 +68,22 @@
 </dependency>
   
   
+  <!-- https://mvnrepository.com/artifact/org.json/json -->
+<dependency>
+    <groupId>org.json</groupId>
+    <artifactId>json</artifactId>
+    <version>20200518</version>
+</dependency>
+  
+  
+
+
+  <dependency>
+    <groupId>org.junit.jupiter</groupId>
+    <artifactId>junit-jupiter-engine</artifactId>
+    <version>5.3.1</version>
+    <scope>test</scope>
+</dependency>
   
   <!-- https://mvnrepository.com/artifact/log4j/log4j -->
 <dependency>

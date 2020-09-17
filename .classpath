@@ -16,13 +16,6 @@
 			<attribute name="owner.project.facets" value="jst.web"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="src/java-json.jar"/>
-	<classpathentry kind="lib" path="src/json4s-jackson_2.10-3.6.9.jar"/>
-	<classpathentry kind="lib" path="src/jackson-annotations-2.11.1.jar"/>
-	<classpathentry kind="lib" path="src/jackson-core-2.11.1.jar"/>
-	<classpathentry kind="lib" path="src/jackson-databind-2.11.1.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/5"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/log4j-1.2.17.jar"/>
 	<classpathentry kind="con" path="org.eclipse.m2e.MAVEN2_CLASSPATH_CONTAINER">
 		<attributes>
 			<attribute name="maven.pomderived" value="true"/>
