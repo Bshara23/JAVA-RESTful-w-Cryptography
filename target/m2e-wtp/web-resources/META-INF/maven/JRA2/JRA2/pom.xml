@@ -53,17 +53,25 @@
 </dependency>
   
   <!-- https://mvnrepository.com/artifact/com.liferay/com.fasterxml.jackson.databind -->
+
+  
+<!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
 <dependency>
-    <groupId>com.liferay</groupId>
-    <artifactId>com.fasterxml.jackson.databind</artifactId>
-    <version>2.10.3.LIFERAY-PATCHED-1</version>
+    <groupId>com.fasterxml.jackson.core</groupId>
+    <artifactId>jackson-databind</artifactId>
+    <version>2.11.2</version>
 </dependency>
-  
-  
-  <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core -->
+<!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core -->
 <dependency>
     <groupId>com.fasterxml.jackson.core</groupId>
     <artifactId>jackson-core</artifactId>
+    <version>2.11.2</version>
+</dependency>
+
+  <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-annotations -->
+<dependency>
+    <groupId>com.fasterxml.jackson.core</groupId>
+    <artifactId>jackson-annotations</artifactId>
     <version>2.11.2</version>
 </dependency>
   
@@ -82,7 +90,6 @@
     <groupId>org.junit.jupiter</groupId>
     <artifactId>junit-jupiter</artifactId>
     <version>5.7.0</version>
-    <scope>test</scope>
 </dependency>
 
 
@@ -91,7 +98,6 @@
     <groupId>org.junit.jupiter</groupId>
     <artifactId>junit-jupiter-params</artifactId>
     <version>5.7.0</version>
-    <scope>test</scope>
 </dependency>
 
 <!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-engine -->
@@ -99,7 +105,6 @@
     <groupId>org.junit.jupiter</groupId>
     <artifactId>junit-jupiter-engine</artifactId>
     <version>5.7.0</version>
-    <scope>test</scope>
 </dependency>
 
 <!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api -->
@@ -107,7 +112,6 @@
     <groupId>org.junit.jupiter</groupId>
     <artifactId>junit-jupiter-api</artifactId>
     <version>5.7.0</version>
-    <scope>test</scope>
 </dependency>
 
 
@@ -123,17 +127,13 @@
     <version>1.2.17</version>
 </dependency>
   
-  
-  
-  
-  
+ 
   
   
   	<dependency>
   		<groupId>javax.servlet</groupId>
   		<artifactId>javax.servlet-api</artifactId>
   		<version>4.0.1</version>
-  		<scope>provided</scope>
   	</dependency>
   </dependencies>
 </project>
