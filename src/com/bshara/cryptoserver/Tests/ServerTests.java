@@ -22,14 +22,14 @@ import com.bshara.cryptoserver.Utils.CryptoUtil;
 import com.bshara.cryptoserver.Utils.JSONUtil;
 
 class ServerTests {
-	public final static String root = "http://localhost:8080/JRA2/main/";
+	public static String root = "http://localhost:8080/JRA2/main/";
 	private final static String id = "123456";
 	private final static String password = "3456";
 	private static final String OK = "OK";
 	private static final String ERROR = "Error";
 	@BeforeEach
 	void setUp() throws Exception {
-
+		root = "https://bscrypto.herokuapp.com/main/";
 	}
 
 	@AfterEach

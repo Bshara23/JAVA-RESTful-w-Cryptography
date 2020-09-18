@@ -64,12 +64,12 @@ public class Server extends Application {
 	@POST
 	@Path("clear")
 	@Consumes("text/plain")
-	public String clearAllKeys() {
+	public Response clearAllKeys() {
 		logger.info("Clearing all keys");
 		keys.clear();
 		Server.idCnt = 0;
 
-		return JSONUtil.toJSONString(new WebMessage(OK));
+		return Response.ok(JSONUtil.toJSONString(new WebMessage(OK))).header("Access-Control-Allow-Origin", "*").build();
 
 	}
 
@@ -125,7 +125,7 @@ public class Server extends Application {
 			clr = new WebMessageWithKey(ERROR, "");
 		}
 
-		return Response.ok(JSONUtil.toJSONString(clr)).build();
+		return Response.ok(JSONUtil.toJSONString(clr)).header("Access-Control-Allow-Origin", "*").build();
 	}
 
 	// TODO: implement this after adding a database
@@ -169,7 +169,7 @@ public class Server extends Application {
 		}
 
 		// TODO: encrypt the response using the users public key
-		return Response.ok(JSONUtil.toJSONString(clr)).build();
+		return Response.ok(JSONUtil.toJSONString(clr)).header("Access-Control-Allow-Origin", "*").build();
 	}
 
 	/*
