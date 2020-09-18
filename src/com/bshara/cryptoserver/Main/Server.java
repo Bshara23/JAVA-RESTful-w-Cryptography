@@ -20,6 +20,7 @@ import javax.ws.rs.core.Application;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.apache.catalina.filters.CorsFilter;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 
@@ -51,7 +52,7 @@ public class Server extends Application {
 	private static HashMap<String, TwoWayKeys> twoWaykeys = new HashMap<String, TwoWayKeys>();
 
 	private static int idCnt = 0;
-
+	CorsFilter dds;
 	/*
 	 * @OPTIONS
 	 * 
@@ -75,6 +76,16 @@ public class Server extends Application {
 	}
 
 	@GET
+	@Path("a")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response a() throws Exception {
+
+		return Response.ok(JSONUtil.toJSONString(new WebMessage("a"))).build();
+
+	}
+	
+	
+	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getAllKeys() throws Exception {
 
@@ -86,7 +97,7 @@ public class Server extends Application {
 
 		String res = JSONUtil.toJSONString(keysIDs);
 
-		return Response.ok(res).header("Access-Control-Allow-Origin", "*").build();
+		return Response.ok(res).build();
 
 		// return JSONUtil.toJSONString(keysIDs);
 
@@ -126,11 +137,7 @@ public class Server extends Application {
 			clr = new WebMessageWithKey(ERROR, "");
 		}
 
-		return Response.ok(JSONUtil.toJSONString(clr)).header("Access-Control-Allow-Origin", "*")
-				.header("Access-Control-Allow-Methods", "API, CRUNCHIFYGET, GET, POST, PUT, UPDATE, OPTIONS")
-				.header("Access-Control-Allow-Headers", "x-requested-with,Content-Type")
-				.header("Access-Control-Max-Age", "151200")
-				.header("Access-Control-Expose-Headers", "access-control-allow-origin").build();
+		return Response.ok(JSONUtil.toJSONString(clr)).build();
 	}
 
 	// TODO: implement this after adding a database
@@ -174,7 +181,7 @@ public class Server extends Application {
 		}
 
 		// TODO: encrypt the response using the users public key
-		return Response.ok(JSONUtil.toJSONString(clr)).header("Access-Control-Allow-Origin", "*").build();
+		return Response.ok(JSONUtil.toJSONString(clr)).build();
 	}
 
 	/*

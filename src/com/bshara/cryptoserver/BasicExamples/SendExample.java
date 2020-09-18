@@ -21,7 +21,7 @@ public class SendExample {
 		
 		KeyPair kp = CryptoUtil.generateKeyPair(2048);
 		String encodePublicKey = Base64.getUrlEncoder().encodeToString(kp.getPublic().getEncoded());
-		root = "https://bscrypto.herokuapp.com/main/";
+		//root = "https://bscrypto.herokuapp.com/main/";
 
 		String generateUrl = root + "connectionRequest/" + id + "?pass=" + password + "&publickey=" + encodePublicKey;
 		
