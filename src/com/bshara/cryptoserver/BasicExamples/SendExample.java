@@ -13,11 +13,25 @@ import com.bshara.cryptoserver.Utils.CryptoUtil;
 import com.bshara.cryptoserver.Utils.JSONUtil;
 
 public class SendExample {
-	public final static String root = "http://localhost:8080/JRA2/main/";
+	public static String root = "http://localhost:8080/JRA2/main/";
 	private static final String id = "12345";
 	private static final String password = "2345";
 
 	public static void main(String[] args) throws Exception {
+		
+		KeyPair kp = CryptoUtil.generateKeyPair(2048);
+		String encodePublicKey = Base64.getUrlEncoder().encodeToString(kp.getPublic().getEncoded());
+		root = "https://bscrypto.herokuapp.com/main/";
+
+		String generateUrl = root + "connectionRequest/" + id + "?pass=" + password + "&publickey=" + encodePublicKey;
+		
+		System.out.println(generateUrl);
+		
+		WebMessageWithKey webMsgWithKey = ((WebMessageWithKey) JSONUtil.postToUrl(generateUrl, WebMessageWithKey.class));
+		
+		
+		/*
+		
 		KeyPair kp = CryptoUtil.generateKeyPair(2048);
 		// Send your public key to the server to communicate
 		String encodePublicKey = Base64.getUrlEncoder().encodeToString(kp.getPublic().getEncoded());
@@ -43,6 +57,6 @@ public class SendExample {
 		SignedMessage signedMessage = CryptoUtil.decryptAndVerify(webMsg.getContent(), kp.getPrivate(), serverPublicKey);
 		
 		System.out.println(signedMessage.getContent());
-		
+		*/
 	}
 }

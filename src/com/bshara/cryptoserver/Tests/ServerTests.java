@@ -29,13 +29,13 @@ class ServerTests {
 	private static final String ERROR = "Error";
 	@BeforeEach
 	void setUp() throws Exception {
-		root = "https://bscrypto.herokuapp.com/main/";
+		//root = "https://bscrypto.herokuapp.com/main/";
 	}
 
 	@AfterEach
 	void tearDown() throws Exception {
-		String clearUrl = ClientUtil.root + "clear";
-		JSONUtil.postToUrl(clearUrl, WebMessage.class);
+		//String clearUrl = ClientUtil.root + "clear";
+		//JSONUtil.postToUrl(clearUrl, WebMessage.class);
 	}
 
 	@Test

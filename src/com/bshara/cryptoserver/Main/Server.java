@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 
 import javax.persistence.PersistenceContext;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -96,7 +97,7 @@ public class Server extends Application {
 	@POST
 	@Path("connectionRequest/{userId}")
 	@Consumes("text/plain")
-	public Response clientRequestConnection(@PathParam("userId") String userId, @QueryParam("pass") String pass,
+	public Response clientRequestConnection(HttpServletRequest request, @PathParam("userId") String userId, @QueryParam("pass") String pass,
 			@QueryParam("publickey") String encodeUserPublicKey) throws Exception {
 
 		WebMessageWithKey clr;
@@ -125,7 +126,11 @@ public class Server extends Application {
 			clr = new WebMessageWithKey(ERROR, "");
 		}
 
-		return Response.ok(JSONUtil.toJSONString(clr)).header("Access-Control-Allow-Origin", "*").build();
+		return Response.ok(JSONUtil.toJSONString(clr)).header("Access-Control-Allow-Origin", "*")
+				.header("Access-Control-Allow-Methods", "API, CRUNCHIFYGET, GET, POST, PUT, UPDATE, OPTIONS")
+				.header("Access-Control-Allow-Headers", "x-requested-with,Content-Type")
+				.header("Access-Control-Max-Age", "151200")
+				.header("Access-Control-Expose-Headers", "access-control-allow-origin").build();
 	}
 
 	// TODO: implement this after adding a database
