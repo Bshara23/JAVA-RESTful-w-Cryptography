@@ -35,6 +35,7 @@ import com.bshara.cryptoserver.Utils.JSONUtil;
 import com.bshara.cryptoserver.Utils.Entities.CryptoMessager;
 import com.bshara.cryptoserver.Utils.Entities.DummyKeys;
 import com.bshara.cryptoserver.Utils.Entities.MessageBuilder;
+import com.bshara.cryptoserver.Utils.Entities.StatusedMessage;
 
 // http://localhost:8080/JRA2/main?a=5
 
@@ -93,25 +94,77 @@ public class Server extends Application {
 
 	}
 
+	@SuppressWarnings("unchecked")
 	@POST
 	@Path("login/{username}")
 	@Consumes("text/plain")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response login(HttpServletRequest request, @PathParam("username") String username,
-			@QueryParam("pass") String pass) throws Exception {
+			@QueryParam("msg") String msg) throws Exception {
 
-		byte[] encodedPass = Base64.getUrlDecoder().decode(pass);
-		String str = new String(encodedPass);
+		String str = new String(Base64.getUrlDecoder().decode(msg));
 		TreeMap<String, Object> signedEncryptedMessage = JSON.parseObject(str, TreeMap.class);
 		TreeMap<String, Object> decryptedMessage = CryptoMessager.Decrypt(signedEncryptedMessage, DummyKeys.serverPrivateKey, DummyKeys.clientPublicKey);
+	
 
+		if(!users.containsKey(username)) {
+			return Response.ok(JSONUtil.toJSONString(new StatusedMessage(ERROR, "user doesn't exist"))).build();
+		}
 		
-		String msg = "Username: " + username + "\nPassword: " + decryptedMessage.toString();
-		logger.info(msg);
+		String password = (String) decryptedMessage.get("password");
+		String storedPassword = (String) users.get(username).get("password");
+		
+		if(storedPassword.equals(password)) {
+			return Response.ok(JSONUtil.toJSONString(new StatusedMessage(OK, "login success"))).build();
 
-		return Response.ok(JSONUtil.toJSONString(new WebMessageWithKey(OK, "nada"))).build();
+		}
+
+		return Response.ok(JSONUtil.toJSONString(new StatusedMessage(ERROR, "login fail"))).build();
 	}
 
+	
+	
+	@SuppressWarnings("unchecked")
+	@POST
+	@Path("chat/{username}")
+	@Consumes("text/plain")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response chat(HttpServletRequest request, @PathParam("username") String username,
+			@QueryParam("msg") String msg) throws Exception {
+
+		String str = new String(Base64.getUrlDecoder().decode(msg));
+		TreeMap<String, Object> signedEncryptedMessage = JSON.parseObject(str, TreeMap.class);
+		TreeMap<String, Object> decryptedMessage = CryptoMessager.Decrypt(signedEncryptedMessage, DummyKeys.serverPrivateKey, DummyKeys.clientPublicKey);
+	
+
+		if(!users.containsKey(username)) {
+			return Response.ok(JSONUtil.toJSONString(new StatusedMessage(ERROR, "user doesn't exist"))).build();
+		}
+		
+		String password = (String) decryptedMessage.get("password");
+		String storedPassword = (String) users.get(username).get("password");
+		
+		if(storedPassword.equals(password)) {
+			
+			if(!decryptedMessage.containsKey("message")) {
+				return Response.ok(JSONUtil.toJSONString(new StatusedMessage(ERROR, "No message field"))).build();
+			}
+			
+			
+			String message = (String) decryptedMessage.get("message");
+			TreeMap<String, Object> messageObject = MessageBuilder.createMessage().add("message", "server says:" + message).build();
+			TreeMap<String, Object> encryptedMsg = CryptoMessager.Encrypt(messageObject, DummyKeys.serverPrivateKey, DummyKeys.clientPublicKey);
+			String uriFriendlyFormat = Base64.getUrlEncoder().encodeToString(JSON.toJSONString(encryptedMsg).getBytes());
+
+			
+			return Response.ok(JSONUtil.toJSONString(new StatusedMessage(OK, uriFriendlyFormat))).build();
+
+		}
+
+		return Response.ok(JSONUtil.toJSONString(new StatusedMessage(ERROR, "login fail"))).build();
+	}
+	
+	
 	@GET
 	@Path("a")
 	@Produces(MediaType.APPLICATION_JSON)

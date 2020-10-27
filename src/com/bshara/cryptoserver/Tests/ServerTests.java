@@ -27,6 +27,7 @@ import com.bshara.cryptoserver.Utils.JSONUtil;
 import com.bshara.cryptoserver.Utils.Entities.CryptoMessager;
 import com.bshara.cryptoserver.Utils.Entities.DummyKeys;
 import com.bshara.cryptoserver.Utils.Entities.MessageBuilder;
+import com.bshara.cryptoserver.Utils.Entities.StatusedMessage;
 
 class ServerTests {
 	public static String root = "http://localhost:8080/JRA2/main/";
@@ -51,9 +52,8 @@ class ServerTests {
 	}
 
 	@Test
-	void login() throws Exception {
+	void loginPasswordCorrect() throws Exception {
 
-		KeyPair kp = CryptoUtil.generateKeyPair(2048);
 
 		String username = "bshara";
 		String password = "123";
@@ -63,16 +63,93 @@ class ServerTests {
 		String uriFriendlyFormat = Base64.getUrlEncoder().encodeToString(JSON.toJSONString(encryptedMsg).getBytes());
 		
 		
-		String generateUrl = root + "login/" + username + "?pass=" + uriFriendlyFormat;
+		String generateUrl = root + "login/" + username + "?msg=" + uriFriendlyFormat;
 		
 		
 
-		WebMessageWithKey webMsgWithKey = ((WebMessageWithKey) JSONUtil.postToUrl(generateUrl,
-				WebMessageWithKey.class));
+		StatusedMessage response = ((StatusedMessage) JSONUtil.postToUrl(generateUrl,
+				StatusedMessage.class));
 
-		assertTrue(webMsgWithKey.getContent().equals(OK));
+		assertTrue(response.getStatus().equals(OK));
 	}
+	@Test
+	void loginPasswordWrong() throws Exception {
 
+
+		String username = "bshara";
+		String password = "124";
+		
+		TreeMap<String, Object> message = MessageBuilder.createMessage().add("password", password).build();
+		TreeMap<String, Object> encryptedMsg = CryptoMessager.Encrypt(message, DummyKeys.clientPrivateKey, DummyKeys.serverPublicKey);
+		String uriFriendlyFormat = Base64.getUrlEncoder().encodeToString(JSON.toJSONString(encryptedMsg).getBytes());
+		
+		
+		String generateUrl = root + "login/" + username + "?msg=" + uriFriendlyFormat;
+		
+		
+
+		StatusedMessage response = ((StatusedMessage) JSONUtil.postToUrl(generateUrl,
+				StatusedMessage.class));
+
+		assertTrue(response.getStatus().equals(ERROR));
+	}
+	@Test
+	void loginUsernameWrong() throws Exception {
+
+
+		String username = "bshara2";
+		String password = "123";
+		
+		TreeMap<String, Object> message = MessageBuilder.createMessage().add("password", password).build();
+		TreeMap<String, Object> encryptedMsg = CryptoMessager.Encrypt(message, DummyKeys.clientPrivateKey, DummyKeys.serverPublicKey);
+		String uriFriendlyFormat = Base64.getUrlEncoder().encodeToString(JSON.toJSONString(encryptedMsg).getBytes());
+		
+		
+		String generateUrl = root + "login/" + username + "?msg=" + uriFriendlyFormat;
+		
+		
+
+		StatusedMessage response = ((StatusedMessage) JSONUtil.postToUrl(generateUrl,
+				StatusedMessage.class));
+
+		assertTrue(response.getStatus().equals(ERROR));
+	}
+	
+	@Test
+	void chatGetSameMessage() throws Exception {
+
+
+		String username = "bshara";
+		String password = "123";
+		String myMessage = "this is bshara";
+		
+		TreeMap<String, Object> message = MessageBuilder.createMessage().add("password", password).add("message", myMessage).build();
+		TreeMap<String, Object> encryptedMsg = CryptoMessager.Encrypt(message, DummyKeys.clientPrivateKey, DummyKeys.serverPublicKey);
+		String uriFriendlyFormat = Base64.getUrlEncoder().encodeToString(JSON.toJSONString(encryptedMsg).getBytes());
+		
+		
+		String generateUrl = root + "chat/" + username + "?msg=" + uriFriendlyFormat;
+		
+		
+		StatusedMessage response = ((StatusedMessage) JSONUtil.postToUrl(generateUrl,
+				StatusedMessage.class));
+
+		if(!response.getStatus().equals(OK)) {
+			assertTrue(false);
+		}
+
+		String encryptedMessage = response.getMessage();
+		String str = new String(Base64.getUrlDecoder().decode(encryptedMessage));
+		TreeMap<String, Object> signedEncryptedMessage = JSON.parseObject(str, TreeMap.class);
+		TreeMap<String, Object> decryptedMessage = CryptoMessager.Decrypt(signedEncryptedMessage, DummyKeys.clientPrivateKey, DummyKeys.serverPublicKey);
+		
+		String actualMessage = (String) decryptedMessage.get("message");
+		
+		log.info("DDDD" + actualMessage);
+		assertTrue(actualMessage.equals("server says:" + myMessage));
+	}
+	
+	
 	@Test
 	void connectionRequestOK() throws Exception {
 
