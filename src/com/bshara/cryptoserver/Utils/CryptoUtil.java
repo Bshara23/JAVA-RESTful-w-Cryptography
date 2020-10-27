@@ -32,10 +32,14 @@ public class CryptoUtil {
 		// make encoded key
 		X509EncodedKeySpec keySpec = new X509EncodedKeySpec(publicBytes);
 
+		
+		
 		// create key by the RSA algorithms
 		KeyFactory keyFactory = KeyFactory.getInstance("RSA");
 		PublicKey pubKey = keyFactory.generatePublic(keySpec);
-
+		//pkcs8 
+		
+		
 		return pubKey;
 	}
 

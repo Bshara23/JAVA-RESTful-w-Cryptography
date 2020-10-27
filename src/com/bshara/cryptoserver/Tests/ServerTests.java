@@ -8,11 +8,15 @@ import java.security.KeyPair;
 import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.TreeMap;
 
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Logger;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import com.alibaba.fastjson.JSON;
 import com.bshara.cryptoserver.Entities.SignedMessage;
 import com.bshara.cryptoserver.Entities.WebMessage;
 import com.bshara.cryptoserver.Entities.WebMessageWithKey;
@@ -20,6 +24,9 @@ import com.bshara.cryptoserver.Entities.WebMessageWithKey;
 import com.bshara.cryptoserver.Utils.ClientUtil;
 import com.bshara.cryptoserver.Utils.CryptoUtil;
 import com.bshara.cryptoserver.Utils.JSONUtil;
+import com.bshara.cryptoserver.Utils.Entities.CryptoMessager;
+import com.bshara.cryptoserver.Utils.Entities.DummyKeys;
+import com.bshara.cryptoserver.Utils.Entities.MessageBuilder;
 
 class ServerTests {
 	public static String root = "http://localhost:8080/JRA2/main/";
@@ -27,15 +34,43 @@ class ServerTests {
 	private final static String password = "3456";
 	private static final String OK = "OK";
 	private static final String ERROR = "Error";
+	private static final Logger log = Logger.getLogger(ServerTests.class);
+	static {
+		BasicConfigurator.configure();
+	}
+
 	@BeforeEach
 	void setUp() throws Exception {
-		//root = "https://bscrypto.herokuapp.com/main/";
+		// root = "https://bscrypto.herokuapp.com/main/";
 	}
 
 	@AfterEach
 	void tearDown() throws Exception {
-		//String clearUrl = ClientUtil.root + "clear";
-		//JSONUtil.postToUrl(clearUrl, WebMessage.class);
+		// String clearUrl = ClientUtil.root + "clear";
+		// JSONUtil.postToUrl(clearUrl, WebMessage.class);
+	}
+
+	@Test
+	void login() throws Exception {
+
+		KeyPair kp = CryptoUtil.generateKeyPair(2048);
+
+		String username = "bshara";
+		String password = "123";
+		
+		TreeMap<String, Object> message = MessageBuilder.createMessage().add("password", password).build();
+		TreeMap<String, Object> encryptedMsg = CryptoMessager.Encrypt(message, DummyKeys.clientPrivateKey, DummyKeys.serverPublicKey);
+		String uriFriendlyFormat = Base64.getUrlEncoder().encodeToString(JSON.toJSONString(encryptedMsg).getBytes());
+		
+		
+		String generateUrl = root + "login/" + username + "?pass=" + uriFriendlyFormat;
+		
+		
+
+		WebMessageWithKey webMsgWithKey = ((WebMessageWithKey) JSONUtil.postToUrl(generateUrl,
+				WebMessageWithKey.class));
+
+		assertTrue(webMsgWithKey.getContent().equals(OK));
 	}
 
 	@Test
@@ -44,14 +79,14 @@ class ServerTests {
 		KeyPair kp = CryptoUtil.generateKeyPair(2048);
 		String encodePublicKey = Base64.getUrlEncoder().encodeToString(kp.getPublic().getEncoded());
 		String generateUrl = root + "connectionRequest/" + id + "?pass=" + password + "&publickey=" + encodePublicKey;
-		
-		WebMessageWithKey webMsgWithKey = ((WebMessageWithKey) JSONUtil.postToUrl(generateUrl, WebMessageWithKey.class));
+
+		WebMessageWithKey webMsgWithKey = ((WebMessageWithKey) JSONUtil.postToUrl(generateUrl,
+				WebMessageWithKey.class));
 
 		assertTrue(webMsgWithKey.getContent().equals(OK));
-		
+
 	}
 
-	
 	@Test
 	void send() throws Exception {
 
@@ -59,32 +94,27 @@ class ServerTests {
 		// Send your public key to the server to communicate
 		String encodePublicKey = Base64.getUrlEncoder().encodeToString(kp.getPublic().getEncoded());
 		String generateUrl = root + "connectionRequest/" + id + "?pass=" + password + "&publickey=" + encodePublicKey;
-		
-		WebMessageWithKey webMsgWithKey = ((WebMessageWithKey) JSONUtil.postToUrl(generateUrl, WebMessageWithKey.class));
 
-		
+		WebMessageWithKey webMsgWithKey = ((WebMessageWithKey) JSONUtil.postToUrl(generateUrl,
+				WebMessageWithKey.class));
+
 		// Get the server's public key after signing in
 		PublicKey serverPublicKey = CryptoUtil.getKeyFromEncodedBase64UrlRSA(webMsgWithKey.getPublicKey());
-		
-		
-		
+
 		String plainText = "This is a test message";
 		String message = CryptoUtil.signAndEncrypt(plainText, kp.getPrivate(), serverPublicKey);
-		
-		
-		
+
 		generateUrl = root + "send/" + id + "?message=" + message;
-		
+
 		WebMessage webMsg = ((WebMessage) JSONUtil.postToUrl(generateUrl, WebMessage.class));
-		
-		SignedMessage signedMessage = CryptoUtil.decryptAndVerify(webMsg.getContent(), kp.getPrivate(), serverPublicKey);
-		
-		
+
+		SignedMessage signedMessage = CryptoUtil.decryptAndVerify(webMsg.getContent(), kp.getPrivate(),
+				serverPublicKey);
+
 		assertTrue(signedMessage.isVerified() && signedMessage.getContent().equals(plainText));
-		
+
 	}
 
-	
 	/*
 	 * @Test void listAllKeysTest() throws IOException {
 	 * 

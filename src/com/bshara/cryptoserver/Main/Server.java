@@ -5,6 +5,7 @@ import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
+import java.util.TreeMap;
 import java.util.Map.Entry;
 
 import javax.persistence.PersistenceContext;
@@ -24,12 +25,16 @@ import org.apache.catalina.filters.CorsFilter;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 
+import com.alibaba.fastjson.JSON;
 import com.bshara.cryptoserver.Entities.SignedMessage;
 import com.bshara.cryptoserver.Entities.TwoWayKeys;
 import com.bshara.cryptoserver.Entities.WebMessage;
 import com.bshara.cryptoserver.Entities.WebMessageWithKey;
 import com.bshara.cryptoserver.Utils.CryptoUtil;
 import com.bshara.cryptoserver.Utils.JSONUtil;
+import com.bshara.cryptoserver.Utils.Entities.CryptoMessager;
+import com.bshara.cryptoserver.Utils.Entities.DummyKeys;
+import com.bshara.cryptoserver.Utils.Entities.MessageBuilder;
 
 // http://localhost:8080/JRA2/main?a=5
 
@@ -51,8 +56,20 @@ public class Server extends Application {
 	private static HashMap<String, KeyPair> keys = new HashMap<String, KeyPair>();
 	private static HashMap<String, TwoWayKeys> twoWaykeys = new HashMap<String, TwoWayKeys>();
 
+	private static TreeMap<String, TreeMap<String, Object>> users = new TreeMap<String, TreeMap<String, Object>>();
+
+	static {
+
+		TreeMap<String, Object> data = MessageBuilder.createMessage().add("publicKey", DummyKeys.clientPublicKey)
+				.add("password", "123").build();
+
+		users.put("bshara", data);
+
+	}
+
 	private static int idCnt = 0;
 	CorsFilter dds;
+
 	/*
 	 * @OPTIONS
 	 * 
@@ -71,20 +88,37 @@ public class Server extends Application {
 		keys.clear();
 		Server.idCnt = 0;
 
-		return Response.ok(JSONUtil.toJSONString(new WebMessage(OK))).header("Access-Control-Allow-Origin", "*").build();
+		return Response.ok(JSONUtil.toJSONString(new WebMessage(OK))).header("Access-Control-Allow-Origin", "*")
+				.build();
 
+	}
+
+	@POST
+	@Path("login/{username}")
+	@Consumes("text/plain")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response login(HttpServletRequest request, @PathParam("username") String username,
+			@QueryParam("pass") String pass) throws Exception {
+
+		byte[] encodedPass = Base64.getUrlDecoder().decode(pass);
+		String str = new String(encodedPass);
+		TreeMap<String, Object> signedEncryptedMessage = JSON.parseObject(str, TreeMap.class);
+		TreeMap<String, Object> decryptedMessage = CryptoMessager.Decrypt(signedEncryptedMessage, DummyKeys.serverPrivateKey, DummyKeys.clientPublicKey);
+
+		
+		String msg = "Username: " + username + "\nPassword: " + decryptedMessage.toString();
+		logger.info(msg);
+
+		return Response.ok(JSONUtil.toJSONString(new WebMessageWithKey(OK, "nada"))).build();
 	}
 
 	@GET
 	@Path("a")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response a() throws Exception {
-
 		return Response.ok(JSONUtil.toJSONString(new WebMessage("a"))).build();
-
 	}
-	
-	
+
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getAllKeys() throws Exception {
@@ -108,8 +142,8 @@ public class Server extends Application {
 	@POST
 	@Path("connectionRequest/{userId}")
 	@Consumes("text/plain")
-	public Response clientRequestConnection(HttpServletRequest request, @PathParam("userId") String userId, @QueryParam("pass") String pass,
-			@QueryParam("publickey") String encodeUserPublicKey) throws Exception {
+	public Response clientRequestConnection(HttpServletRequest request, @PathParam("userId") String userId,
+			@QueryParam("pass") String pass, @QueryParam("publickey") String encodeUserPublicKey) throws Exception {
 
 		WebMessageWithKey clr;
 		if (isUserVerified(userId, pass)) {
@@ -170,7 +204,8 @@ public class Server extends Application {
 
 				// send the user the same message to indicate success
 				// TODO: expand this to handle multiple commands
-				clr = new WebMessage(CryptoUtil.signAndEncrypt(signedMessage.getContent(), twk.getMyKeys().getPrivate(), twk.getOthersPublicKey()));
+				clr = new WebMessage(CryptoUtil.signAndEncrypt(signedMessage.getContent(), twk.getMyKeys().getPrivate(),
+						twk.getOthersPublicKey()));
 			} else {
 				clr = new WebMessage(ERROR);
 			}
