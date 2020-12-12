@@ -5,7 +5,9 @@ public class StatusedMessage {
 
 	private String status;
 	private String message;
+	public StatusedMessage() {
 	
+	}
 	
 	public StatusedMessage(String status, String message) {
 		this.status = status;

@@ -51,7 +51,11 @@
     <artifactId>javax.persistence-api</artifactId>
     <version>2.2</version>
 </dependency>
-  
+  <dependency>
+ <groupId>com.thetransactioncompany</groupId>
+ <artifactId>cors-filter</artifactId>
+ <version>2.4</version>
+</dependency>
   <!-- https://mvnrepository.com/artifact/com.liferay/com.fasterxml.jackson.databind -->
 
   <!-- https://mvnrepository.com/artifact/com.alibaba/fastjson -->
@@ -68,7 +72,20 @@
     <artifactId>commons-lang3</artifactId>
     <version>3.11</version>
 </dependency>
-  
+
+
+<dependency>
+    <groupId>com.github.markusbernhardt</groupId>
+    <artifactId>robotframework-selenium2library-java</artifactId>
+    <version>1.4.0.7</version>
+    <scope>test</scope>
+    <exclusions>
+        <exclusion>
+            <artifactId>tools</artifactId>
+            <groupId>com.sun</groupId>
+        </exclusion>
+    </exclusions>  
+</dependency>
   
 <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
 <dependency>

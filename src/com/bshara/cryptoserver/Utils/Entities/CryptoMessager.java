@@ -27,7 +27,10 @@ public class CryptoMessager {
 
 		// Use the RSA algorithm to encrypt the AES key that has just been generated
 		String encryptedAESkey = RSA.encrypt(aesKey, recipientPublicKey);
-
+		//String encryptedAESkey = RSAAlg.encrypt(aesKey, recipientPublicKey);
+		
+		
+		
 		signedEncryptedMessage = new TreeMap<String, Object>();
 		signedEncryptedMessage.put("encryptedMessage", encryptedMessage);
 		signedEncryptedMessage.put("encryptedAESkey", encryptedAESkey);
