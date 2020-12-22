@@ -24,6 +24,7 @@ import javax.ws.rs.core.Response;
 import org.apache.catalina.filters.CorsFilter;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
+import org.apache.log4j.Priority;
 
 import com.alibaba.fastjson.JSON;
 import com.bshara.cryptoserver.Entities.SignedMessage;
@@ -32,10 +33,13 @@ import com.bshara.cryptoserver.Entities.WebMessage;
 import com.bshara.cryptoserver.Entities.WebMessageWithKey;
 import com.bshara.cryptoserver.Utils.CryptoUtil;
 import com.bshara.cryptoserver.Utils.JSONUtil;
+import com.bshara.cryptoserver.Utils.Keys;
+import com.bshara.cryptoserver.Utils.RSA_AES;
 import com.bshara.cryptoserver.Utils.Entities.CryptoMessager;
 import com.bshara.cryptoserver.Utils.Entities.DummyKeys;
 import com.bshara.cryptoserver.Utils.Entities.MessageBuilder;
 import com.bshara.cryptoserver.Utils.Entities.StatusedMessage;
+import com.bshara.cryptoserver.Utils.Keys.Key;
 
 // http://localhost:8080/JRA2/main?a=5
 
@@ -58,6 +62,7 @@ public class Server extends Application {
 	private static HashMap<String, TwoWayKeys> twoWaykeys = new HashMap<String, TwoWayKeys>();
 
 	private static TreeMap<String, TreeMap<String, Object>> users = new TreeMap<String, TreeMap<String, Object>>();
+	private static ArrayList<String> groupChat = new ArrayList<String>();
 
 	static {
 
@@ -104,17 +109,17 @@ public class Server extends Application {
 
 		String str = new String(Base64.getUrlDecoder().decode(msg));
 		TreeMap<String, Object> signedEncryptedMessage = JSON.parseObject(str, TreeMap.class);
-		TreeMap<String, Object> decryptedMessage = CryptoMessager.Decrypt(signedEncryptedMessage, DummyKeys.serverPrivateKey, DummyKeys.clientPublicKey);
-	
+		TreeMap<String, Object> decryptedMessage = CryptoMessager.Decrypt(signedEncryptedMessage,
+				DummyKeys.serverPrivateKey, DummyKeys.clientPublicKey);
 
-		if(!users.containsKey(username)) {
+		if (!users.containsKey(username)) {
 			return Response.ok(JSONUtil.toJSONString(new StatusedMessage(ERROR, "user doesn't exist"))).build();
 		}
-		
+
 		String password = (String) decryptedMessage.get("password");
 		String storedPassword = (String) users.get(username).get("password");
-		
-		if(storedPassword.equals(password)) {
+
+		if (storedPassword.equals(password)) {
 			return Response.ok(JSONUtil.toJSONString(new StatusedMessage(OK, "login success"))).build();
 
 		}
@@ -122,49 +127,88 @@ public class Server extends Application {
 		return Response.ok(JSONUtil.toJSONString(new StatusedMessage(ERROR, "login fail"))).build();
 	}
 
-	
-	
+	@POST
+	@Path("allmessages")
+	@Consumes("text/plain")
+
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getAllMessages(HttpServletRequest request) throws Exception {
+
+		StatusedMessage res = new StatusedMessage(OK, JSONUtil.toJSONString(groupChat));
+		return Response.ok(JSONUtil.toJSONString(res)).build();
+	}
+
 	@SuppressWarnings("unchecked")
 	@POST
-	@Path("chat/{username}")
+	@Path("chatx/{username}")
 	@Consumes("text/plain")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response chat(HttpServletRequest request, @PathParam("username") String username,
 			@QueryParam("msg") String msg) throws Exception {
 
+		Key k = Keys.INSTANCE.getKey(0);
+		int myD = k.d;
+		int e = k.e;
+		int myN = k.n;
+		int n = k.n;
+
+		logger.log(Priority.DEBUG, msg);
+
+		groupChat.add(msg);
+
+		String c = new String(Base64.getUrlDecoder().decode(msg));
+		TreeMap<String, String> map = RSA_AES.Decrypt(c, myD, myN, e, n);
+
+		String decryptedM = map.get("m");
+		String isSignValid = map.get("sign");
+
+		logger.log(Priority.DEBUG, decryptedM);
+		logger.log(Priority.DEBUG, isSignValid);
+
+		return Response.ok(JSONUtil.toJSONString(new StatusedMessage(ERROR, "login fail"))).build();
+	}
+
+	@SuppressWarnings("unchecked")
+	@POST
+	@Path("chat/{username}")
+	@Consumes("text/plain")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response chat_old(HttpServletRequest request, @PathParam("username") String username,
+			@QueryParam("msg") String msg) throws Exception {
+
 		String str = new String(Base64.getUrlDecoder().decode(msg));
 		TreeMap<String, Object> signedEncryptedMessage = JSON.parseObject(str, TreeMap.class);
-		TreeMap<String, Object> decryptedMessage = CryptoMessager.Decrypt(signedEncryptedMessage, DummyKeys.serverPrivateKey, DummyKeys.clientPublicKey);
-	
+		TreeMap<String, Object> decryptedMessage = CryptoMessager.Decrypt(signedEncryptedMessage,
+				DummyKeys.serverPrivateKey, DummyKeys.clientPublicKey);
 
-		if(!users.containsKey(username)) {
+		if (!users.containsKey(username)) {
 			return Response.ok(JSONUtil.toJSONString(new StatusedMessage(ERROR, "user doesn't exist"))).build();
 		}
-		
+
 		String password = (String) decryptedMessage.get("password");
 		String storedPassword = (String) users.get(username).get("password");
-		
-		if(storedPassword.equals(password)) {
-			
-			if(!decryptedMessage.containsKey("message")) {
+
+		if (storedPassword.equals(password)) {
+
+			if (!decryptedMessage.containsKey("message")) {
 				return Response.ok(JSONUtil.toJSONString(new StatusedMessage(ERROR, "No message field"))).build();
 			}
-			
-			
-			String message = (String) decryptedMessage.get("message");
-			TreeMap<String, Object> messageObject = MessageBuilder.createMessage().add("message", "server says:" + message).build();
-			TreeMap<String, Object> encryptedMsg = CryptoMessager.Encrypt(messageObject, DummyKeys.serverPrivateKey, DummyKeys.clientPublicKey);
-			String uriFriendlyFormat = Base64.getUrlEncoder().encodeToString(JSON.toJSONString(encryptedMsg).getBytes());
 
-			
+			String message = (String) decryptedMessage.get("message");
+			TreeMap<String, Object> messageObject = MessageBuilder.createMessage()
+					.add("message", "server says:" + message).build();
+			TreeMap<String, Object> encryptedMsg = CryptoMessager.Encrypt(messageObject, DummyKeys.serverPrivateKey,
+					DummyKeys.clientPublicKey);
+			String uriFriendlyFormat = Base64.getUrlEncoder()
+					.encodeToString(JSON.toJSONString(encryptedMsg).getBytes());
+
 			return Response.ok(JSONUtil.toJSONString(new StatusedMessage(OK, uriFriendlyFormat))).build();
 
 		}
 
 		return Response.ok(JSONUtil.toJSONString(new StatusedMessage(ERROR, "login fail"))).build();
 	}
-	
-	
+
 	@GET
 	@Path("a")
 	@Produces(MediaType.APPLICATION_JSON)

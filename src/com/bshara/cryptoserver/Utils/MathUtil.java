@@ -1,5 +1,6 @@
 package com.bshara.cryptoserver.Utils;
 
+import java.math.BigInteger;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class MathUtil {
@@ -85,13 +86,40 @@ public class MathUtil {
         return (int) (ans * ans) % n;
     }
 
-
+    // (a^b)%c
     public static long modExpNonRec(long a, long b, long c) {
-        long res = 1;
-        for (int i = 0; i < b; i++) {
-            res *= a;
-            res %= c;
-        }
-        return res % c;
+//        long res = 1;
+//        for (int i = 0; i < b; i++) {
+//            res *= a;
+//            res %= c;
+//            System.out.println("dd");
+//        }
+//        return res % c;
+    	
+    	
+	  BigInteger ax = new BigInteger(String.valueOf(a));
+	  BigInteger bx = new BigInteger(String.valueOf(b));
+	  BigInteger cx = new BigInteger(String.valueOf(c));
+	  
+	  BigInteger bi3 = ax.modPow(bx, cx);
+	  
+	  return bi3.longValue();
+    	
     }
+    
+    
+    public static long modExponent(long encodedTxt, long power, long exponent) {
+
+  	
+	  BigInteger ax = new BigInteger(String.valueOf(encodedTxt));
+	  BigInteger bx = new BigInteger(String.valueOf(power));
+	  BigInteger cx = new BigInteger(String.valueOf(exponent));
+	  
+	  
+	  return ax.modPow(bx, cx).longValue();
+  	
+  }
+    
+
+    
 }
