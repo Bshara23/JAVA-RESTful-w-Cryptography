@@ -54,10 +54,15 @@ public class AES {
             Cipher cipher = Cipher.getInstance(ConfigureEncryptAndDecrypt.AES_ALGORITHM);
             IvParameterSpec iv = new IvParameterSpec(key);
             cipher.init(Cipher.DECRYPT_MODE, seckey, iv);
-            byte[] result = cipher.doFinal(data);
-            return result; 
+            try {
+                byte[] result = cipher.doFinal(data);
+                return result; 
+
+			} catch (Exception e) {
+	            return data; 
+			}
         } catch (Exception e) {
-            e.printStackTrace();
+           // e.printStackTrace();
             throw new RuntimeException("decrypt fail!", e);
         }
     }

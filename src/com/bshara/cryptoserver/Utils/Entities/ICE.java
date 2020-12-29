@@ -1,35 +1,63 @@
 package com.bshara.cryptoserver.Utils.Entities;
 
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 public class ICE {
 
-	private static final char CH = 'd';
+	private static final char CH = '#';
+	private static final Charset charset = StandardCharsets.ISO_8859_1;
+	
+	
+	static String enc(String m, String k) {
 
-	public static String Encrypt(String m, String key) {
+		IceKey a = new IceKey(1);
+		a.clear();
+		a.set(k.getBytes());
 
+		byte[] ciphertext = new byte[8];
+		a.encrypt(m.getBytes(), ciphertext);
+
+		String c = new String(ciphertext, charset);
+
+		return c;
+
+	}
+
+	static String dec(String c, String k) {
+
+		IceKey a = new IceKey(1);
+		a.clear();
+		a.set(k.getBytes());
+
+		byte[] plaintext = new byte[8];
+		a.decrypt(c.getBytes(charset), plaintext);
+
+		String m2 = new String(plaintext);
+
+		return m2;
+	}
+
+	public static String Encrypt(String m, String key) throws UnsupportedEncodingException {
+
+		m = Base64.encode(m);
 		ArrayList<String> splits = splitStringBySize(m, 8);
 
 		int idx = splits.size() - 1;
 		splits.set(idx, fixSize(splits.get(idx)));
 
-		IceKey a = new IceKey(1);
-		a.clear();
-
 		String c = "";
 		for (String str : splits) {
-//			str = replaceWhiteSpaces(str);
-
-			byte[] ciphertext = new byte[8];
-			a.set(key.getBytes());
-			a.encrypt(str.getBytes(), ciphertext);
-			c += new String(ciphertext);
+			str = replaceWhiteSpaces(str);
+			c += enc(str, key);
 		}
 
 		return c;
 	}
 
-	public static String Decrypt(String c, String key) {
+	public static String Decrypt(String c, String key) throws UnsupportedEncodingException {
 
 		ArrayList<String> splits = splitStringBySize(c, 8);
 
@@ -38,18 +66,18 @@ public class ICE {
 
 		String m = "";
 		for (String str : splits) {
-			byte[] plaintext2 = new byte[8];
-			a.set(key.getBytes());
+
 			if (str.length() > 0) {
-				a.decrypt(str.getBytes(), plaintext2);
-//				m += returnWhiteSpaces(new String(plaintext2));
-				m += new String(plaintext2);
+
+				m += dec(str, key);
 
 			}
 
 		}
 
-		return clean(m);
+		m = clean(m);
+		m = Base64.decode(m);
+		return m;
 	}
 
 	private static ArrayList<String> splitStringBySize(String str, int size) {
@@ -70,15 +98,15 @@ public class ICE {
 
 	private static String clean(String str) {
 
-		return str;
-//		return str.replaceAll(CH + "", "");
+		return str.replaceAll(CH + "", "");
 
 	}
 
-//	private static String replaceWhiteSpaces(String str) {
-//		return str.replaceAll(" ", "x");
-//	}
-//	private static String returnWhiteSpaces(String str) {
-//		return str.replaceAll("x", " ");
-//	}
+	private static String replaceWhiteSpaces(String str) {
+		return str.replaceAll(" ", CH+"");
+	}
+
+	private static String returnWhiteSpaces(String str) {
+		return str.replaceAll(CH+"", " ");
+	}
 }

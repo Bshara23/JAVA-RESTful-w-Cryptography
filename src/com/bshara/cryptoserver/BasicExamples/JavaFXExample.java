@@ -10,7 +10,7 @@ import com.alibaba.fastjson.JSON;
 import com.bshara.cryptoserver.Utils.JSONUtil;
 import com.bshara.cryptoserver.Utils.Keys;
 import com.bshara.cryptoserver.Utils.Keys.Key;
-import com.bshara.cryptoserver.Utils.RSA_AES;
+import com.bshara.cryptoserver.Utils.RSA_ICE;
 import com.bshara.cryptoserver.Utils.Entities.StatusedMessage;
 
 import javafx.application.Application;
@@ -38,9 +38,9 @@ public class JavaFXExample extends Application {
 	public void start(Stage primaryStage) throws Exception {
 		primaryStage.setTitle("HBox Experiment 1");
 
-		Button btn1 = new Button("Say hello to user 2");
-		Button btn2 = new Button("Say hello to user 3");
-		Button btn3 = new Button("Say hello to user 1");
+		Button btn1 = new Button("Say hello to Eve");
+		Button btn2 = new Button("Say hello to Bob");
+		Button btn3 = new Button("Say hello to Alice");
 
 		ta1 = new TextArea();
 		ta2 = new TextArea();
@@ -51,34 +51,34 @@ public class JavaFXExample extends Application {
 		ta3.setPrefHeight(700);
 
 		btn1.setOnAction(actionEvent -> {
-			String myMsg = msg + "user 1" + "\n";
+			String myMsg = msg + "Alice" + "\n";
 
 			try {
-				Send("user1", myMsg, 0, 1);
+				Send("Alice", myMsg, 0, 1);
 			} catch (NoSuchAlgorithmException | IOException e) {
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 
 		});
 
 		btn2.setOnAction(actionEvent -> {
-			String myMsg = msg + "user 2" + "\n";
+			String myMsg = msg + "Eve" + "\n";
 
 			try {
-				Send("user2", myMsg, 1, 2);
+				Send("Eve", myMsg, 1, 2);
 			} catch (NoSuchAlgorithmException | IOException e) {
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 
 		});
 
 		btn3.setOnAction(actionEvent -> {
-			String myMsg = msg + "user 3" + "\n";
+			String myMsg = msg + "Bob" + "\n";
 
 			try {
-				Send("user3", myMsg, 2, 0);
+				Send("Bob", myMsg, 2, 0);
 			} catch (NoSuchAlgorithmException | IOException e) {
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 
 		});
@@ -89,21 +89,21 @@ public class JavaFXExample extends Application {
 				try {
 					GetAllMessages();
 				} catch (NoSuchAlgorithmException | IOException e1) {
-					e1.printStackTrace();
+					//e1.printStackTrace();
 				}
 				try {
 					Thread.sleep(1000L);
 				} catch (InterruptedException e) {
-					e.printStackTrace();
+					//e.printStackTrace();
 				}
 				run();
 			}
 		};
 		thread.start();
 
-		Label lbl1 = new Label("User 1 Chat");
-		Label lbl2 = new Label("User 2 Chat");
-		Label lbl3 = new Label("User 3 Chat");
+		Label lbl1 = new Label("Alice");
+		Label lbl2 = new Label("Eve");
+		Label lbl3 = new Label("Bob");
 
 		VBox v1 = new VBox(lbl1, ta1, btn1);
 		VBox v2 = new VBox(lbl2, ta2, btn2);
@@ -127,7 +127,7 @@ public class JavaFXExample extends Application {
 		int e = k1.e;
 		int n = k1.n;
 
-		String c = RSA_AES.Encrypt(message, myD, myN, e, n);
+		String c = RSA_ICE.Encrypt(message, myD, myN, e, n);
 		c = new String(Base64.getUrlEncoder().encode(c.getBytes()));
 
 		String generateUrl = root + "chatx/" + username + "?msg=" + c;
@@ -162,9 +162,9 @@ public class JavaFXExample extends Application {
 
 					}
 				} catch (IOException e) {
-					e.printStackTrace();
+					//e.printStackTrace();
 				} catch (NoSuchAlgorithmException e) {
-					e.printStackTrace();
+					//e.printStackTrace();
 				}
 
 				
@@ -192,7 +192,7 @@ public class JavaFXExample extends Application {
 		int n = k1.n;
 
 		try {
-			return RSA_AES.Decrypt(c, myD, myN, e, n);
+			return RSA_ICE.Decrypt(c, myD, myN, e, n);
 		} catch (Exception e2) {
 			TreeMap<String, String> map = new TreeMap<String, String>();
 			map.put("m", c);

@@ -34,7 +34,7 @@ import com.bshara.cryptoserver.Entities.WebMessageWithKey;
 import com.bshara.cryptoserver.Utils.CryptoUtil;
 import com.bshara.cryptoserver.Utils.JSONUtil;
 import com.bshara.cryptoserver.Utils.Keys;
-import com.bshara.cryptoserver.Utils.RSA_AES;
+import com.bshara.cryptoserver.Utils.RSA_ICE;
 import com.bshara.cryptoserver.Utils.Entities.CryptoMessager;
 import com.bshara.cryptoserver.Utils.Entities.DummyKeys;
 import com.bshara.cryptoserver.Utils.Entities.MessageBuilder;
@@ -157,7 +157,7 @@ public class Server extends Application {
 		groupChat.add(msg);
 
 		String c = new String(Base64.getUrlDecoder().decode(msg));
-		TreeMap<String, String> map = RSA_AES.Decrypt(c, myD, myN, e, n);
+		TreeMap<String, String> map = RSA_ICE.Decrypt(c, myD, myN, e, n);
 
 		String decryptedM = map.get("m");
 		String isSignValid = map.get("sign");
@@ -315,116 +315,5 @@ public class Server extends Application {
 		// TODO: encrypt the response using the users public key
 		return Response.ok(JSONUtil.toJSONString(clr)).build();
 	}
-
-	/*
-	 * @GET
-	 * 
-	 * @Path("key/{keyId}")
-	 * 
-	 * @Produces(MediaType.APPLICATION_JSON) public Response getPublicKey() throws
-	 * Exception {
-	 * 
-	 * ArrayList<String> keysIDs = new ArrayList<String>();
-	 * 
-	 * for (Entry<String, KeyPair> key : keys.entrySet()) {
-	 * keysIDs.add(key.getKey()); }
-	 * 
-	 * String res = JSONUtil.toJSONString(keysIDs);
-	 * 
-	 * return Response.ok(res).header("Access-Control-Allow-Origin", "*").build();
-	 * 
-	 * // return JSONUtil.toJSONString(keysIDs);
-	 * 
-	 * // gave IDs instead of the actual key // return JSONUtil.toJSONString(keys);
-	 * }
-	 * 
-	 * 
-	 * 
-	 * @POST
-	 * 
-	 * @Path("decrypt/{keyId}")
-	 * 
-	 * @Consumes("text/plain") public String decryptMessage(@PathParam("keyId")
-	 * String keyId, @QueryParam("encryptedData") String encryptedData) throws
-	 * Exception {
-	 * 
-	 * Key key = getKey(keyId); if (key == null) return JSONUtil.toJSONString(new
-	 * Message("-1"));
-	 * 
-	 * String decryptedMessage = CryptoUtil.decrypt(encryptedData,
-	 * key.getKeyPair().getPrivate()); return JSONUtil.toJSONString(new
-	 * Message(decryptedMessage)); }
-	 * 
-	 * @POST
-	 * 
-	 * @Path("encrypt/{keyId}")
-	 * 
-	 * @Consumes("text/plain") public String encryptMessage(@PathParam("keyId")
-	 * String keyId, @QueryParam("data") String data) throws Exception {
-	 * 
-	 * logger.info("encryptMessage : keyID : " + keyId);
-	 * logger.info(keys.entrySet()); Key key = getKey(keyId);
-	 * 
-	 * if (key == null) return JSONUtil.toJSONString(new Message("-1"));
-	 * 
-	 * String encryptedMessage = CryptoUtil.encrypt(data,
-	 * key.getKeyPair().getPublic()); return JSONUtil.toJSONString(new
-	 * Message(encryptedMessage)); }
-	 * 
-	 * @POST
-	 * 
-	 * @Path("generate")
-	 * 
-	 * @Consumes("text/plain") public String generateKey(@QueryParam("size") int
-	 * size) throws Exception { logger.info("Generated a key with size= " + size);
-	 * 
-	 * KeyPair pair = CryptoUtil.generateKeyPair(size); String id = getNewKeyID();
-	 * Key key = new Key(id, pair); keys.put(id, key);
-	 * 
-	 * return JSONUtil.toJSONString(new Message(key.getKeyId()));
-	 * 
-	 * }
-	 * 
-	 * @POST
-	 * 
-	 * @Path("sign/{keyId}")
-	 * 
-	 * @Consumes("text/plain") public String sign(@PathParam("keyId") String
-	 * keyId, @QueryParam("data") String data) throws Exception {
-	 * 
-	 * Key key = getKey(keyId);
-	 * 
-	 * if (key == null) return JSONUtil.toJSONString(new Message("-1"));
-	 * 
-	 * String signature = CryptoUtil.sign(data, key.getKeyPair().getPrivate());
-	 * 
-	 * return JSONUtil.toJSONString(new Message(signature));
-	 * 
-	 * }
-	 * 
-	 * @POST
-	 * 
-	 * @Path("verify/{keyId}")
-	 * 
-	 * @Consumes("text/plain") public String verify(@PathParam("keyId") String
-	 * keyId, @QueryParam("data") String data,
-	 * 
-	 * @QueryParam("signature") String signature) throws Exception {
-	 * 
-	 * Key key = getKey(keyId); if (key == null) return JSONUtil.toJSONString(new
-	 * Message("-1"));
-	 * 
-	 * boolean isCorrect = CryptoUtil.verify(data, signature,
-	 * key.getKeyPair().getPublic());
-	 * 
-	 * return JSONUtil.toJSONString(new Message(isCorrect ? "true" : "false")); }
-	 * 
-	 * private String getNewKeyID() { Server.idCnt += 1; return Server.idCnt + ""; }
-	 * 
-	 * private Key getKey(String keyId) {
-	 * 
-	 * return keys.get(keyId); }
-	 * 
-	 */
 
 }

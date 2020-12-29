@@ -45,7 +45,7 @@ public class RSA_ICE {
 
 		// encrypt the signed message using AES
 		String aesKey = SecureRandomUtil.getRandom(8);
-		aesKey = "12345678";
+		//aesKey = "12345678";
 		// encrypt the message along with the signature using the AES key, Encrypted
 		// stringified signed message -> essm
 		System.out.println("Key1: " + aesKey);
@@ -93,7 +93,7 @@ public class RSA_ICE {
 		String essm2 = aessm2.get("encryptedMessage");
 
 		String aesKey2 = RSAAlg.decrypt(eAES_key2, myD, myN);
-		aesKey2 = "12345678";
+		//aesKey2 = "12345678";
 		String ssm2 = ICE.Decrypt(essm2, aesKey2);
 
 		System.out.println("Decrypted: " + ssm2);

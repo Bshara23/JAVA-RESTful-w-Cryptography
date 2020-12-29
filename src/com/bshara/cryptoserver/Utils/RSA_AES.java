@@ -77,30 +77,40 @@ public class RSA_AES {
 	public static TreeMap<String, String> Decrypt(String c, int myD, int myN, int e, int n)
 			throws NoSuchAlgorithmException {
 
-		TreeMap<String, String> aessm2 = JSON.parseObject(c, new TypeReference<TreeMap<String, String>>() {
-		});
+		
 
-		String eAES_key2 = aessm2.get("key");
-		String essm2 = aessm2.get("encryptedMessage");
+		try {
+			TreeMap<String, String> aessm2 = JSON.parseObject(c, new TypeReference<TreeMap<String, String>>() {
+			});
 
-		String aesKey2 = RSAAlg.decrypt(eAES_key2, myD, myN);
+			String eAES_key2 = aessm2.get("key");
+			String essm2 = aessm2.get("encryptedMessage");
 
-		String ssm2 = ConvertUtils.hexStringToString(AES.decryptFromBase64(essm2, aesKey2));
+			String aesKey2 = RSAAlg.decrypt(eAES_key2, myD, myN);
+			String ssm2 = ConvertUtils.hexStringToString(AES.decryptFromBase64(essm2, aesKey2));
 
-		TreeMap<String, String> sm2 = JSON.parseObject(ssm2, new TypeReference<TreeMap<String, String>>() {
-		});
+			TreeMap<String, String> sm2 = JSON.parseObject(ssm2, new TypeReference<TreeMap<String, String>>() {
+			});
 
-		String m2 = sm2.get("m");
-		String sign2 = sm2.get("sign");
+			String m2 = sm2.get("m");
+			String sign2 = sm2.get("sign");
 
-		boolean isVerified = RSAAlg.checkSign(m2, sign2, e, n);
-		String isSignatureValid = isVerified ? "Yes" : "No";
+			boolean isVerified = RSAAlg.checkSign(m2, sign2, e, n);
+			String isSignatureValid = isVerified ? "Yes" : "No";
 
-		TreeMap<String, String> res = new TreeMap<String, String>();
-		res.put("sign", isSignatureValid);
-		res.put("m", m2);
+			TreeMap<String, String> res = new TreeMap<String, String>();
+			res.put("sign", isSignatureValid);
+			res.put("m", m2);
 
-		return res;
+			return res;
+		} catch (Exception e2) {
+			TreeMap<String, String> res = new TreeMap<String, String>();
+			res.put("sign", "false");
+			res.put("m", c);
+			
+			return res;
+		}
+		
 	}
 
 }
