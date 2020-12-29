@@ -1,4 +1,4 @@
-package com.bshara.cryptoserver.Tests;
+package com.bshara.cryptoserver.Tests.Algorithms;
 
 import static org.junit.jupiter.api.Assertions.*;
 

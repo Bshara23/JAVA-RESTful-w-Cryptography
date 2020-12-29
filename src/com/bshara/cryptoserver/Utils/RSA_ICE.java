@@ -101,17 +101,26 @@ public class RSA_ICE {
 		TreeMap<String, String> sm2 = JSON.parseObject(ssm2, new TypeReference<TreeMap<String, String>>() {
 		});
 
-		String m2 = sm2.get("m");
-		String sign2 = sm2.get("sign");
-		System.out.println("Sign2: " + sign2);
+		try {
+			String m2 = sm2.get("m");
+			String sign2 = sm2.get("sign");
+			System.out.println("Sign2: " + sign2);
 
-		boolean isVerified = RSAAlg.checkSign(m2, sign2, e, n);
-		String isSignatureValid = isVerified ? "Yes" : "No";
+			boolean isVerified = RSAAlg.checkSign(m2, sign2, e, n);
+			String isSignatureValid = isVerified ? "Yes" : "No";
 
-		TreeMap<String, String> res = new TreeMap<String, String>();
-		res.put("sign", isSignatureValid);
-		res.put("m", m2);
+			TreeMap<String, String> res = new TreeMap<String, String>();
+			res.put("sign", isSignatureValid);
+			res.put("m", m2);
 
-		return res;
+			return res;
+		} catch (Exception e2) {
+			
+			TreeMap<String, String> res = new TreeMap<String, String>();
+			res.put("sign", c);
+			res.put("m", c);
+			return res;
+		}
+		
 	}
 }

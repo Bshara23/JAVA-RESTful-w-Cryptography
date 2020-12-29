@@ -1,4 +1,4 @@
-package com.bshara.cryptoserver.BasicExamples;
+package com.bshara.cryptoserver.Main;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
@@ -23,7 +23,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.application.Platform;
 
-public class JavaFXExample extends Application {
+public class GUI extends Application {
 	public static String root = "http://localhost:8080/JRA2/main/";
 
 	public static TextArea ta1, ta2, ta3;

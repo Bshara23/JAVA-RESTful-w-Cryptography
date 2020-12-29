@@ -52,17 +52,7 @@ public class MathUtil {
     }
 
   
-    public static long probablePrime(int range, int rounds) {
-        if (range > 0 && rounds > 0) {
-            ThreadLocalRandom random = ThreadLocalRandom.current();
-            while (true) {
-                int num = random.nextInt(range) + 2;
-                if (PrimalityTester.isProbablePrime(num, rounds))
-                    return num;
-            }
-        }
-        return  -1;
-    }
+  
 
  
     public static long modExp(long x, long b, long n) {
