@@ -43,21 +43,20 @@ public class RSA_ICE {
 		// Stringify sm
 		String ssm = JSON.toJSONString(sm);
 
-		// encrypt the signed message using AES
-		String aesKey = SecureRandomUtil.getRandom(8);
-		//aesKey = "12345678";
-		// encrypt the message along with the signature using the AES key, Encrypted
+		// encrypt the signed message using ICE
+		String iceKey = SecureRandomUtil.getRandom(8);
+		// encrypt the message along with the signature using the ICE key, Encrypted
 		// stringified signed message -> essm
-		System.out.println("Key1: " + aesKey);
+		System.out.println("Key1: " + iceKey);
 
-		String essm = ICE.Encrypt(ssm, aesKey);
+		String essm = ICE.Encrypt(ssm, iceKey);
 		System.out.println("C2: " + essm);
 
 		// Encrypt the AES key using RSA
-		String eAES_key = RSAAlg.encrypt(aesKey, e, n);
+		String eICE_KEY = RSAAlg.encrypt(iceKey, e, n);
 
 		TreeMap<String, String> aessm = new TreeMap<String, String>();
-		aessm.put("key", eAES_key);
+		aessm.put("key", eICE_KEY);
 		aessm.put("encryptedMessage", essm);
 
 		// Stringify message
@@ -89,12 +88,12 @@ public class RSA_ICE {
 		TreeMap<String, String> aessm2 = JSON.parseObject(c, new TypeReference<TreeMap<String, String>>() {
 		});
 
-		String eAES_key2 = aessm2.get("key");
+		String eICE_key2 = aessm2.get("key");
 		String essm2 = aessm2.get("encryptedMessage");
 
-		String aesKey2 = RSAAlg.decrypt(eAES_key2, myD, myN);
+		String iceKey2 = RSAAlg.decrypt(eICE_key2, myD, myN);
 		//aesKey2 = "12345678";
-		String ssm2 = ICE.Decrypt(essm2, aesKey2);
+		String ssm2 = ICE.Decrypt(essm2, iceKey2);
 
 		System.out.println("Decrypted: " + ssm2);
 
